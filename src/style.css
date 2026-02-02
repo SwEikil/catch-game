@@ -1,0 +1,307 @@
+/* ==================== КІБЕРПАНК СТИЛЬ (CYBERPUNK 2077) ==================== */
+
+/* Приглушені кольори в стилі Cyberpunk 2077 */
+:root {
+  --neon-pink: #ff4da6;        /* Менш яскравий рожевий */
+  --neon-cyan: #00d9ff;        /* Приглушений ціановий */
+  --neon-purple: #8b5cf6;      /* М'який фіолетовий */
+  --neon-red: #ff0040;         /* Приглушений червоний */
+  --neon-blue: #0099cc;       /* М'який синій */
+  --dark-bg: #0a0a0f;
+  --darker-bg: #050508;
+  --grid-color: rgba(0, 217, 255, 0.05);  /* Дуже слабка сітка */
+}
+
+/* Загальні стилі */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: var(--dark-bg);
+  font-family: 'Courier New', 'Monaco', monospace;
+  overflow: hidden;
+}
+
+/* ==================== APP КОНТЕЙНЕР ==================== */
+#app {
+  font-family: 'Courier New', 'Monaco', monospace;
+  text-align: center;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--darker-bg) 0%, var(--dark-bg) 100%);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Заголовок - м'яке світіння */
+#app h1 {
+  color: var(--neon-cyan);
+  font-size: 2.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  margin: 20px 0 10px 0;
+  text-shadow: 
+    0 0 5px rgba(0, 217, 255, 0.5),
+    0 0 10px rgba(0, 217, 255, 0.3);
+  animation: glow-pulse 3s ease-in-out infinite alternate;
+}
+
+/* Опис - приглушений */
+#app p {
+  color: rgba(255, 77, 166, 0.8);  /* Напівпрозорий рожевий */
+  font-size: 1rem;
+  margin-bottom: 15px;
+  text-shadow: 0 0 3px rgba(255, 77, 166, 0.4);
+  letter-spacing: 1px;
+}
+
+/* ==================== СТАТИСТИКА ==================== */
+#stats-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(0, 217, 255, 0.4);  /* Тонша, менш яскрава межа */
+  border-radius: 10px;
+  margin: 10px auto;
+  box-shadow: 
+    0 0 8px rgba(0, 217, 255, 0.2),
+    inset 0 0 10px rgba(0, 217, 255, 0.05);
+  width: fit-content;
+}
+
+#score-container, 
+#time-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#stats-container label {
+  color: rgba(0, 217, 255, 0.9);  /* Читабельний ціановий */
+  text-shadow: 0 0 3px rgba(0, 217, 255, 0.3);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#stats-container span {
+  color: rgba(255, 0, 64, 0.9);  /* Читабельний червоний */
+  text-shadow: 0 0 4px rgba(255, 0, 64, 0.4);
+  font-weight: bold;
+  min-width: 40px;
+  text-align: left;
+}
+
+/* ==================== ІГРОВЕ ПОЛЕ ==================== */
+#target-container {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  background: 
+    linear-gradient(rgba(0, 217, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
+  background-color: var(--darker-bg);
+  border-top: 1px solid rgba(0, 217, 255, 0.3);  /* Тонша межа */
+  box-shadow: 
+    0 -2px 10px rgba(0, 217, 255, 0.15),
+    inset 0 0 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* Анімація сітки - дуже слабка */
+#target-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(rgba(0, 217, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 217, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: grid-move 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes grid-move {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(50px, 50px); }
+}
+
+/* ==================== TARGET ==================== */
+#target {
+  width: 50px;
+  height: 50px;
+  /* Змішування червоного та ціанового */
+  background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.6));
+  border-radius: 8px;
+  position: absolute;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 0, 64, 0.6);
+  box-shadow: 
+    0 0 8px rgba(255, 0, 64, 0.4),
+    0 0 15px rgba(0, 217, 255, 0.3),
+    inset 0 0 8px rgba(255, 0, 64, 0.2);
+  animation: target-glow 2s ease-in-out infinite alternate;
+}
+
+#target:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 0 12px rgba(255, 0, 64, 0.5),
+    0 0 20px rgba(0, 217, 255, 0.4),
+    inset 0 0 10px rgba(255, 0, 64, 0.3);
+}
+
+#target:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.6), rgba(255, 0, 64, 0.8));
+}
+
+@keyframes target-glow {
+  0% {
+    box-shadow: 
+      0 0 8px rgba(255, 0, 64, 0.4),
+      0 0 15px rgba(0, 217, 255, 0.3);
+  }
+  100% {
+    box-shadow: 
+      0 0 12px rgba(255, 0, 64, 0.5),
+      0 0 20px rgba(0, 217, 255, 0.4);
+  }
+}
+
+/* ==================== ЕКРАН КІНЦЯ ГРИ ==================== */
+#game-over {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, rgba(10, 10, 15, 0.98), rgba(5, 5, 8, 0.99));
+  padding: 50px;
+  border-radius: 15px;
+  border: 1px solid rgba(0, 217, 255, 0.4);
+  box-shadow: 
+    0 0 15px rgba(0, 217, 255, 0.2),
+    0 0 30px rgba(255, 0, 64, 0.15),
+    inset 0 0 20px rgba(0, 217, 255, 0.05);
+  text-align: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+#game-over h1 {
+  color: rgba(255, 77, 166, 0.9);
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 
+    0 0 5px rgba(255, 77, 166, 0.4),
+    0 0 10px rgba(255, 77, 166, 0.2);
+  animation: glow-pulse 3s ease-in-out infinite alternate;
+}
+
+#game-over h3 {
+  color: rgba(0, 217, 255, 0.9);
+  font-size: 1.3rem;
+  margin: 15px 0;
+  text-shadow: 0 0 3px rgba(0, 217, 255, 0.3);
+}
+
+#game-over h3:last-of-type {
+  color: rgba(255, 0, 64, 0.9);
+  font-size: 2rem;
+  text-shadow: 
+    0 0 5px rgba(255, 0, 64, 0.4),
+    0 0 10px rgba(255, 0, 64, 0.2);
+}
+
+/* ==================== КНОПКА RESTART ==================== */
+#restart-btn {
+  /* Змішування червоного та ціанового */
+  background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.7));
+  color: #ffffff;
+  padding: 15px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 0, 64, 0.6);
+  outline: none;
+  margin-top: 20px;
+  box-shadow: 
+    0 0 8px rgba(255, 0, 64, 0.3),
+    0 0 12px rgba(0, 217, 255, 0.2);
+  font-family: 'Courier New', monospace;
+}
+
+#restart-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 217, 255, 0.7), rgba(255, 0, 64, 0.8));
+  transform: scale(1.05);
+  box-shadow: 
+    0 0 12px rgba(255, 0, 64, 0.4),
+    0 0 18px rgba(0, 217, 255, 0.3);
+}
+
+#restart-btn:active {
+  transform: scale(0.95);
+  box-shadow: 
+    0 0 5px rgba(255, 0, 64, 0.2),
+    0 0 8px rgba(0, 217, 255, 0.15);
+}
+
+/* ==================== АНІМАЦІЇ ==================== */
+@keyframes glow-pulse {
+  0% {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor;
+  }
+  100% {
+    text-shadow: 
+      0 0 3px currentColor,
+      0 0 6px currentColor,
+      0 0 12px currentColor;
+  }
+}
+
+/* Додатковий ефект для body - дуже слабкий */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 50%, rgba(255, 0, 64, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 217, 255, 0.03) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: background-shift 10s ease-in-out infinite alternate;
+}
+
+@keyframes background-shift {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.5;
+  }
+}
