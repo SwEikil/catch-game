@@ -12,6 +12,7 @@ export const UI_TEXT = {
     gameOverTitle: 'Time\'s up!',
     gameOverScore: 'Your score:',
     restartBtn: 'Restart',
+    settingsBtn: 'Settings',
 } as const;
 
 export const UI_IDS = {
@@ -20,6 +21,7 @@ export const UI_IDS = {
     targetContainer: 'target-container',
     scoreText: 'score',
     timeText: 'time',
+    settingsBtn: 'settings-btn',
 } as const;
 
 export const UI_CLASSES = {

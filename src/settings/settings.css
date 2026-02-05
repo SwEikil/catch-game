@@ -1,0 +1,376 @@
+/* ==================== КНОПКА НАЛАШТУВАНЬ ==================== */
+.settings-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.7));
+    color: #ffffff;
+    border: 1px solid rgba(0, 217, 255, 0.5);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 8px rgba(255, 0, 64, 0.3),
+        0 0 12px rgba(0, 217, 255, 0.2);
+    z-index: 100;
+}
+
+.settings-button:hover {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.7), rgba(255, 0, 64, 0.8));
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 12px rgba(255, 0, 64, 0.4),
+        0 0 18px rgba(0, 217, 255, 0.3);
+}
+
+.settings-button:active {
+    transform: scale(0.95);
+    box-shadow: 
+        0 0 5px rgba(255, 0, 64, 0.2),
+        0 0 8px rgba(0, 217, 255, 0.15);
+}
+
+/* ==================== МОДАЛЬНЕ ВІКНО НАЛАШТУВАНЬ ==================== */
+.settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.settings-content {
+    background: linear-gradient(135deg, rgba(10, 10, 15, 0.98), rgba(5, 5, 8, 0.99));
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 5px;
+    box-shadow: 
+        0 0 20px rgba(0, 217, 255, 0.2),
+        0 0 40px rgba(255, 0, 64, 0.15),
+        inset 0 0 20px rgba(0, 217, 255, 0.05);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ==================== ЗАГОЛОВОК МОДАЛЬНОГО ВІКНА ==================== */
+.settings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 25px;
+    border-bottom: 1px solid rgba(0, 217, 255, 0.2);
+}
+
+.settings-title {
+    color: rgba(0, 217, 255, 0.9);
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+    text-shadow: 0 0 5px rgba(0, 217, 255, 0.3);
+    font-family: 'Courier New', monospace;
+}
+
+.settings-close {
+    background: transparent;
+    border: 1px solid rgba(255, 0, 64, 0.5);
+    color: rgba(255, 0, 64, 0.9);
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+.settings-close:hover {
+    background: rgba(255, 0, 64, 0.2);
+    border-color: rgba(255, 0, 64, 0.8);
+    box-shadow: 0 0 10px rgba(255, 0, 64, 0.4);
+    transform: rotate(90deg);
+}
+
+.settings-close:active {
+    transform: rotate(90deg) scale(0.9);
+}
+
+/* ==================== ТІЛО МОДАЛЬНОГО ВІКНА ==================== */
+.settings-body {
+    padding: 25px;
+    padding-right: 20px; /* Додати відступ справа для скролбару, щоб він не обрізався */
+}
+
+.settings-group {
+    margin-bottom: 30px;
+}
+
+.settings-label {
+    display: block;
+    color: rgba(0, 217, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 3px rgba(0, 217, 255, 0.3);
+}
+
+/* ==================== СЛАЙДЕРИ ==================== */
+.settings-slider-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.settings-slider {
+    flex: 1;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 3px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.settings-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.9), rgba(0, 217, 255, 0.9));
+    border: 1px solid rgba(0, 217, 255, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 
+        0 0 5px rgba(255, 0, 64, 0.4),
+        0 0 10px rgba(0, 217, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.settings-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 
+        0 0 8px rgba(255, 0, 64, 0.6),
+        0 0 15px rgba(0, 217, 255, 0.5);
+}
+
+.settings-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.9), rgba(0, 217, 255, 0.9));
+    border: 1px solid rgba(0, 217, 255, 0.6);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 
+        0 0 5px rgba(255, 0, 64, 0.4),
+        0 0 10px rgba(0, 217, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.settings-slider::-moz-range-thumb:hover {
+    transform: scale(1.2);
+    box-shadow: 
+        0 0 8px rgba(255, 0, 64, 0.6),
+        0 0 15px rgba(0, 217, 255, 0.5);
+}
+
+.settings-value {
+    color: rgba(255, 0, 64, 0.9);
+    font-size: 1rem;
+    font-weight: bold;
+    min-width: 40px;
+    text-align: right;
+    text-shadow: 0 0 4px rgba(255, 0, 64, 0.4);
+    font-family: 'Courier New', monospace;
+}
+
+/* ==================== SELECT (ВИБІР МОВИ) ==================== */
+.settings-select-container {
+    display: flex;
+    align-items: center;
+}
+
+.settings-select {
+    flex: 1;
+    padding: 10px 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(0, 217, 255, 0.4);
+    border-radius: 5px;
+    color: rgba(255, 0, 64, 0.9);
+    font-size: 0.9rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 
+        0 0 5px rgba(0, 217, 255, 0.2),
+        inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.settings-select:hover {
+    border-color: rgba(0, 217, 255, 0.6);
+    box-shadow: 
+        0 0 8px rgba(0, 217, 255, 0.3),
+        inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.settings-select:focus {
+    border-color: rgba(255, 0, 64, 0.6);
+    box-shadow: 
+        0 0 10px rgba(255, 0, 64, 0.3),
+        0 0 15px rgba(0, 217, 255, 0.2),
+        inset 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+.settings-select option {
+    background: rgba(10, 10, 15, 0.98);
+    color: rgba(255, 0, 64, 0.9);
+    padding: 10px;
+}
+
+/* ==================== ЧЕКБОКСИ ==================== */
+.settings-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    color: rgba(0, 217, 255, 0.9);
+    font-size: 0.9rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 3px rgba(0, 217, 255, 0.3);
+}
+
+.settings-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: rgba(255, 0, 64, 0.8);
+    border: 1px solid rgba(0, 217, 255, 0.5);
+    border-radius: 3px;
+}
+
+.settings-checkbox:checked {
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.9), rgba(0, 217, 255, 0.9));
+    box-shadow: 
+        0 0 5px rgba(255, 0, 64, 0.4),
+        0 0 10px rgba(0, 217, 255, 0.3);
+}
+
+/* ==================== ФУТЕР МОДАЛЬНОГО ВІКНА ==================== */
+.settings-footer {
+    padding: 20px 25px;
+    border-top: 1px solid rgba(0, 217, 255, 0.2);
+    display: flex;
+    justify-content: center;
+}
+
+.settings-reset-btn {
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.7));
+    color: #ffffff;
+    padding: 12px 25px;
+    border: 1px solid rgba(255, 0, 64, 0.6);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Courier New', monospace;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 0 8px rgba(255, 0, 64, 0.3),
+        0 0 12px rgba(0, 217, 255, 0.2);
+}
+
+.settings-reset-btn:hover {
+    background: linear-gradient(135deg, rgba(0, 217, 255, 0.7), rgba(255, 0, 64, 0.8));
+    transform: scale(1.05);
+    box-shadow: 
+        0 0 12px rgba(255, 0, 64, 0.4),
+        0 0 18px rgba(0, 217, 255, 0.3);
+}
+
+.settings-reset-btn:active {
+    transform: scale(0.95);
+    box-shadow: 
+        0 0 5px rgba(255, 0, 64, 0.2),
+        0 0 8px rgba(0, 217, 255, 0.15);
+}
+
+/* ==================== ПРОКРУТКА ==================== */
+.settings-content::-webkit-scrollbar {
+    width: 10px;
+}
+
+.settings-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    margin: 5px 0; /* Відступи зверху та знизу, щоб не обрізатися заокругленими кутами */
+}
+
+.settings-content::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.6), rgba(0, 217, 255, 0.6));
+    border-radius: 5px;
+    border: 1px solid rgba(0, 217, 255, 0.3);
+}
+
+.settings-content::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.8));
+    box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
+}
+
+/* Firefox scrollbar */
+.settings-content {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 217, 255, 0.6) rgba(0, 0, 0, 0.3);
+}

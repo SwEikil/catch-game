@@ -1,12 +1,17 @@
-import { UI_TEXT, UI_IDS } from './config';
+import { UI_IDS } from './config';
+import { Localization } from './localization/localization';
+import { SoundManager } from './sound/sound-manager';
 
 export class GameUI {
+    private localization!: Localization;
+    private soundManager: SoundManager | null = null;
     // ==================== ПОСИЛАННЯ НА DOM ЕЛЕМЕНТИ ====================
     private app!: HTMLDivElement;
     private statsContainer!: HTMLDivElement;
     private targetContainer!: HTMLDivElement;
     private scoreText!: HTMLSpanElement;
     private timeText!: HTMLSpanElement;
+    private backToMenuBtn!: HTMLButtonElement;
 
     // ==================== ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ СТВОРЕННЯ ЕЛЕМЕНТІВ ====================
     private createStatItem(labelText: string, valueId: string, initialValue: string): { container: HTMLDivElement; valueElement: HTMLSpanElement } {
@@ -37,15 +42,17 @@ export class GameUI {
     }
 
     // ==================== ІНІЦІАЛІЗАЦІЯ UI ====================
-    init(initialTime: number): void {
+    init(initialTime: number, localization: Localization, soundManager?: SoundManager): void {
+        this.localization = localization;
+        this.soundManager = soundManager || null;
         this.app = document.createElement('div');
         this.app.id = UI_IDS.app;
         document.body.appendChild(this.app);
         
         // Заголовок та опис
         const { titleElement, descriptionElement } = this.createHeader(
-            UI_TEXT.title,
-            UI_TEXT.description
+            this.localization.t('title'),
+            this.localization.t('description')
         );
         this.app.appendChild(titleElement);
         this.app.appendChild(descriptionElement);
@@ -56,14 +63,26 @@ export class GameUI {
         this.app.appendChild(this.statsContainer);
         
         // Score та Time
-        const scoreItem = this.createStatItem(UI_TEXT.scoreLabel, UI_IDS.scoreText, '0');
-        const timeItem = this.createStatItem(UI_TEXT.timeLabel, UI_IDS.timeText, initialTime.toString());
+        const scoreItem = this.createStatItem(this.localization.t('scoreLabel'), UI_IDS.scoreText, '0');
+        const timeItem = this.createStatItem(this.localization.t('timeLabel'), UI_IDS.timeText, initialTime.toString());
         
         this.statsContainer.appendChild(scoreItem.container);
         this.statsContainer.appendChild(timeItem.container);
         
         this.scoreText = scoreItem.valueElement;
         this.timeText = timeItem.valueElement;
+        
+        // Кнопка повернення до меню (в правому верхньому куті)
+        this.backToMenuBtn = document.createElement('button');
+        this.backToMenuBtn.id = 'back-to-menu-btn';
+        this.backToMenuBtn.textContent = this.localization.t('backToMenuBtn');
+        this.backToMenuBtn.className = 'back-to-menu-button';
+        this.app.appendChild(this.backToMenuBtn);
+        
+        // Підписатися на зміни мови
+        this.localization.subscribe(() => {
+            this.updateLocalizedTexts();
+        });
         
         // Ігрове поле
         this.targetContainer = document.createElement('div');
@@ -80,7 +99,12 @@ export class GameUI {
 
     updateTime(timeLeft: number): void {
         if (this.timeText) {
-            this.timeText.innerText = timeLeft.toString();
+            // Якщо бескінечний час (999999), показувати символ ∞
+            if (timeLeft >= 999999) {
+                this.timeText.innerText = '∞';
+            } else {
+                this.timeText.innerText = timeLeft.toString();
+            }
         }
     }
 
@@ -89,7 +113,12 @@ export class GameUI {
             this.scoreText.innerText = '0';
         }
         if (initialTime !== undefined && this.timeText) {
-            this.timeText.innerText = initialTime.toString();
+            // Якщо бескінечний час (999999), показувати символ ∞
+            if (initialTime >= 999999) {
+                this.timeText.innerText = '∞';
+            } else {
+                this.timeText.innerText = initialTime.toString();
+            }
         }
     }
 
@@ -104,6 +133,10 @@ export class GameUI {
 
     getApp(): HTMLDivElement {
         return this.app;
+    }
+
+    getBackToMenuButton(): HTMLButtonElement {
+        return this.backToMenuBtn;
     }
 
     // ==================== ЕКРАН КІНЦЯ ГРИ ====================
@@ -129,18 +162,23 @@ export class GameUI {
         gameOverScreen.id = 'game-over';
         
         const title = document.createElement('h1');
-        title.textContent = UI_TEXT.gameOverTitle;
+        title.textContent = this.localization.t('gameOverTitle');
         
         const scoreTitle = document.createElement('h3');
-        scoreTitle.textContent = UI_TEXT.gameOverScore;
+        scoreTitle.textContent = this.localization.t('gameOverScore');
         
         const scoreValue = document.createElement('h3');
         scoreValue.textContent = score.toString();
         
         const restartBtn = document.createElement('button');
-        restartBtn.textContent = UI_TEXT.restartBtn;
+        restartBtn.textContent = this.localization.t('restartBtn');
         restartBtn.id = 'restart-btn';
-        restartBtn.addEventListener('click', onRestart);
+        restartBtn.addEventListener('click', () => {
+            if (this.soundManager) {
+                this.soundManager.playSound('btn-press');
+            }
+            onRestart();
+        });
         
         gameOverScreen.appendChild(title);
         gameOverScreen.appendChild(scoreTitle);
@@ -159,9 +197,29 @@ export class GameUI {
         }
     }
 
+    // Оновити локалізовані тексти
+    private updateLocalizedTexts(): void {
+        // Оновити заголовок та опис
+        const titleElement = this.app.querySelector('h1');
+        const descriptionElement = this.app.querySelector('p');
+        if (titleElement) titleElement.textContent = this.localization.t('title');
+        if (descriptionElement) descriptionElement.textContent = this.localization.t('description');
+        
+        // Оновити labels
+        const scoreLabel = this.app.querySelector('#score-container label');
+        const timeLabel = this.app.querySelector('#time-container label');
+        if (scoreLabel) scoreLabel.textContent = this.localization.t('scoreLabel');
+        if (timeLabel) timeLabel.textContent = this.localization.t('timeLabel');
+        
+        // Оновити кнопку повернення до меню
+        if (this.backToMenuBtn) {
+            this.backToMenuBtn.textContent = this.localization.t('backToMenuBtn');
+        }
+    }
+
     // ==================== ВАЛІДАЦІЯ ====================
     validateGameElements(): void {
-        if (!this.targetContainer || !this.scoreText || !this.timeText || !this.statsContainer || !this.app) {
+        if (!this.targetContainer || !this.scoreText || !this.timeText || !this.statsContainer || !this.app || !this.backToMenuBtn) {
             throw new Error("Something went wrong: no items found");
         }
     }
