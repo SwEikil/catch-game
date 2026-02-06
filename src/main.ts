@@ -1,4 +1,5 @@
 import './style.css';
+import './background/synthwave.css';
 import './settings/settings.css';
 import './menu/menu.css';
 import { Game } from './game';

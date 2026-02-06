@@ -8,6 +8,7 @@ import { MusicManager } from './music/music-manager';
 import { MainMenu, type MainMenuAction } from './menu/main-menu';
 import { ModeSelectionMenu } from './menu/mode-selection-menu';
 import type { GameSettings, GameMode } from './settings/types';
+import { SynthwaveBeatController } from './background/synthwave-beat-controller';
 
 export class Game {
     private gameUI: GameUI | null = null;
@@ -24,6 +25,8 @@ export class Game {
     private timeLeft: number = 30;
     private intervalId: number | null = null;
     private gameStarted: boolean = false;
+    private menuBeatController: SynthwaveBeatController | null = null;
+    private gameBeatController: SynthwaveBeatController | null = null;
 
     constructor() {
         try {
@@ -98,6 +101,8 @@ export class Game {
     private showMainMenu(): void {
         this.hideAllViews();
         this.mainMenu.show(this.app);
+        this.stopGameBeat();
+        this.startMenuBeat();
     }
     
     private showModeSelection(): void {
@@ -110,6 +115,8 @@ export class Game {
         // Просто приховати інші меню окремо
         this.mainMenu.hide();
         this.modeSelectionMenu.hide();
+        this.stopMenuBeat();
+        this.stopGameBeat();
         if (this.gameUI) {
             this.gameUI.getApp().style.display = 'none';
         }
@@ -123,6 +130,8 @@ export class Game {
         this.mainMenu.hide();
         this.modeSelectionMenu.hide();
         this.settingsUI.close();
+        this.stopMenuBeat();
+        this.stopGameBeat();
         if (this.gameUI) {
             this.gameUI.getApp().style.display = 'none';
         }
@@ -211,6 +220,11 @@ export class Game {
         // Показати UI гри
         this.app.appendChild(this.gameUI.getApp());
         
+        // UA: Включити музику відповідного режиму одразу після старту гри
+        // EN: Start music for the corresponding mode immediately after game start
+        this.musicManager.playGameTheme(currentMode);
+        this.startGameBeat();
+        
         // Налаштувати обробники подій
         this.setupGameEventListeners();
         
@@ -292,11 +306,48 @@ export class Game {
                 setTimeout(() => {
                     if (currentMusic === 'menu-theme') {
                         this.musicManager.playMenuTheme();
-                    } else if (currentMusic === 'game-theme') {
-                        this.musicManager.playGameTheme();
+                    } else if (currentMusic) {
+                        // UA: Відтворити музику відповідного режиму гри
+                        // EN: Play music for the corresponding game mode
+                        const mode = currentMusic as GameMode;
+                        this.musicManager.playGameTheme(mode);
                     }
                 }, 50);
             }
+        }
+    }
+
+    private startMenuBeat(): void {
+        const background = this.mainMenu.getBackgroundElement();
+        if (!background) {
+            return;
+        }
+        if (!this.menuBeatController) {
+            this.menuBeatController = new SynthwaveBeatController(background);
+        }
+        this.menuBeatController.connect(this.musicManager.getCurrentAudioElement());
+    }
+
+    private startGameBeat(): void {
+        const background = this.gameUI?.getBackgroundElement();
+        if (!background) {
+            return;
+        }
+        if (!this.gameBeatController) {
+            this.gameBeatController = new SynthwaveBeatController(background);
+        }
+        this.gameBeatController.connect(this.musicManager.getCurrentAudioElement());
+    }
+
+    private stopMenuBeat(): void {
+        if (this.menuBeatController) {
+            this.menuBeatController.stop();
+        }
+    }
+
+    private stopGameBeat(): void {
+        if (this.gameBeatController) {
+            this.gameBeatController.stop();
         }
     }
 
@@ -348,8 +399,6 @@ export class Game {
             this.startGameTimer();
             // Встановити що гра почалася в target
             this.target.setGameStarted(true);
-            // Переключити музику на game-theme
-            this.musicManager.playGameTheme();
         }
         
         // ВАЖЛИВО: Скасувати таймер одразу при кліку, до будь-яких інших операцій

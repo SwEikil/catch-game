@@ -10,6 +10,7 @@ export class SettingsUI {
     private settingsModal: HTMLDivElement | null = null;
     private onCloseCallback: (() => void) | null = null;
     private onSettingsChangeCallback: ((settings: GameSettings) => void) | null = null;
+    private activeTabIndex: number = 0; // Зберігаємо активну вкладку
 
     constructor(settings: Settings, localization: Localization, soundManager: SoundManager) {
         this.settings = settings;
@@ -19,12 +20,22 @@ export class SettingsUI {
         // Підписатися на зміни мови
         this.localization.subscribe(() => {
             if (this.settingsModal) {
+                // Зберегти активну вкладку перед перестворенням
+                const activeTab = this.settingsModal.querySelector('.settings-tab.active');
+                if (activeTab) {
+                    const tabs = Array.from(this.settingsModal.querySelectorAll('.settings-tab'));
+                    this.activeTabIndex = tabs.indexOf(activeTab);
+                }
+                
                 // Оновити модальне вікно при зміні мови
                 const parent = this.settingsModal.parentElement;
                 if (parent) {
                     parent.removeChild(this.settingsModal);
                     const newModal = this.createSettingsModal();
                     parent.appendChild(newModal);
+                    this.settingsModal = newModal;
+                    // Відновити активну вкладку
+                    this.switchTab(this.activeTabIndex);
                 }
             }
         });
@@ -63,51 +74,25 @@ export class SettingsUI {
         header.appendChild(title);
         header.appendChild(closeBtn);
         
+        // Створити табову навігацію
+        const tabs = this.createTabs();
+        
         const body = document.createElement('div');
         body.className = 'settings-body';
         
-        // Sound Volume
-        const soundVolumeGroup = this.createSliderGroup(
-            this.localization.t('soundVolumeLabel'),
-            'soundVolume',
-            this.settings.get('soundVolume'),
-            0,
-            100,
-            5
-        );
+        // Створити вкладки контенту
+        const soundTab = this.createSoundTab();
+        const musicTab = this.createMusicTab();
+        const languageTab = this.createLanguageTab();
         
-        // Music Volume
-        const musicVolumeGroup = this.createSliderGroup(
-            this.localization.t('musicVolumeLabel'),
-            'musicVolume',
-            this.settings.get('musicVolume'),
-            0,
-            100,
-            5
-        );
+        // Приховати всі вкладки окрім активної
+        if (this.activeTabIndex !== 0) soundTab.style.display = 'none';
+        if (this.activeTabIndex !== 1) musicTab.style.display = 'none';
+        if (this.activeTabIndex !== 2) languageTab.style.display = 'none';
         
-        // Sound Enabled
-        const soundEnabledGroup = this.createCheckboxGroup(
-            this.localization.t('enableSoundLabel'),
-            'isSoundEnabled',
-            this.settings.get('isSoundEnabled')
-        );
-        
-        // Music Enabled
-        const musicEnabledGroup = this.createCheckboxGroup(
-            this.localization.t('enableMusicLabel'),
-            'isMusicEnabled',
-            this.settings.get('isMusicEnabled')
-        );
-        
-        // Language
-        const languageGroup = this.createLanguageGroup();
-        
-        body.appendChild(soundVolumeGroup);
-        body.appendChild(musicVolumeGroup);
-        body.appendChild(soundEnabledGroup);
-        body.appendChild(musicEnabledGroup);
-        body.appendChild(languageGroup);
+        body.appendChild(soundTab);
+        body.appendChild(musicTab);
+        body.appendChild(languageTab);
         
         const footer = document.createElement('div');
         footer.className = 'settings-footer';
@@ -123,6 +108,7 @@ export class SettingsUI {
         footer.appendChild(resetBtn);
         
         content.appendChild(header);
+        content.appendChild(tabs);
         content.appendChild(body);
         content.appendChild(footer);
         modal.appendChild(content);
@@ -136,6 +122,136 @@ export class SettingsUI {
         
         this.settingsModal = modal;
         return modal;
+    }
+
+    // Створити табову навігацію
+    private createTabs(): HTMLDivElement {
+        const tabsContainer = document.createElement('div');
+        tabsContainer.className = 'settings-tabs';
+        
+        const soundTab = document.createElement('button');
+        soundTab.className = `settings-tab ${this.activeTabIndex === 0 ? 'active' : ''}`;
+        soundTab.textContent = this.localization.t('soundTabLabel');
+        soundTab.addEventListener('click', () => {
+            this.switchTab(0);
+            this.soundManager.playSound('btn-press');
+        });
+        
+        const musicTab = document.createElement('button');
+        musicTab.className = `settings-tab ${this.activeTabIndex === 1 ? 'active' : ''}`;
+        musicTab.textContent = this.localization.t('musicTabLabel');
+        musicTab.addEventListener('click', () => {
+            this.switchTab(1);
+            this.soundManager.playSound('btn-press');
+        });
+        
+        const languageTab = document.createElement('button');
+        languageTab.className = `settings-tab ${this.activeTabIndex === 2 ? 'active' : ''}`;
+        languageTab.textContent = this.localization.t('languageTabLabel');
+        languageTab.addEventListener('click', () => {
+            this.switchTab(2);
+            this.soundManager.playSound('btn-press');
+        });
+        
+        tabsContainer.appendChild(soundTab);
+        tabsContainer.appendChild(musicTab);
+        tabsContainer.appendChild(languageTab);
+        
+        return tabsContainer;
+    }
+
+    // Переключити вкладку
+    private switchTab(index: number): void {
+        if (!this.settingsModal) return;
+        
+        this.activeTabIndex = index;
+        
+        const tabs = this.settingsModal.querySelectorAll('.settings-tab');
+        const tabContents = this.settingsModal.querySelectorAll('.settings-body > div');
+        
+        tabs.forEach((tab, i) => {
+            if (i === index) {
+                tab.classList.add('active');
+            } else {
+                tab.classList.remove('active');
+            }
+        });
+        
+        tabContents.forEach((content, i) => {
+            if (i === index) {
+                (content as HTMLElement).style.display = 'block';
+            } else {
+                (content as HTMLElement).style.display = 'none';
+            }
+        });
+    }
+
+    // Створити вкладку звуку
+    private createSoundTab(): HTMLDivElement {
+        const tab = document.createElement('div');
+        tab.className = 'settings-tab-content';
+        
+        // Sound Volume
+        const soundVolumeGroup = this.createSliderGroup(
+            this.localization.t('soundVolumeLabel'),
+            'soundVolume',
+            this.settings.get('soundVolume'),
+            0,
+            100,
+            5
+        );
+        
+        // Sound Enabled
+        const soundEnabledGroup = this.createToggleGroup(
+            this.localization.t('enableSoundLabel'),
+            'isSoundEnabled',
+            this.settings.get('isSoundEnabled')
+        );
+        
+        tab.appendChild(soundVolumeGroup);
+        tab.appendChild(soundEnabledGroup);
+        
+        return tab;
+    }
+
+    // Створити вкладку музики
+    private createMusicTab(): HTMLDivElement {
+        const tab = document.createElement('div');
+        tab.className = 'settings-tab-content';
+        
+        // Music Volume
+        const musicVolumeGroup = this.createSliderGroup(
+            this.localization.t('musicVolumeLabel'),
+            'musicVolume',
+            this.settings.get('musicVolume'),
+            0,
+            100,
+            5
+        );
+        
+        // Music Enabled
+        const musicEnabledGroup = this.createToggleGroup(
+            this.localization.t('enableMusicLabel'),
+            'isMusicEnabled',
+            this.settings.get('isMusicEnabled')
+        );
+        
+        tab.appendChild(musicVolumeGroup);
+        tab.appendChild(musicEnabledGroup);
+        
+        return tab;
+    }
+
+    // Створити вкладку мови
+    private createLanguageTab(): HTMLDivElement {
+        const tab = document.createElement('div');
+        tab.className = 'settings-tab-content';
+        
+        // Language
+        const languageGroup = this.createLanguageGroup();
+        tab.appendChild(languageGroup);
+        
+        return tab;
     }
 
     // Створити групу зі слайдером
@@ -157,6 +273,13 @@ export class SettingsUI {
         const sliderContainer = document.createElement('div');
         sliderContainer.className = 'settings-slider-container';
         
+        const sliderWrapper = document.createElement('div');
+        sliderWrapper.className = 'settings-slider-wrapper';
+        
+        // Створити обводку як окремий елемент
+        const borderElement = document.createElement('div');
+        borderElement.className = 'settings-slider-border';
+        
         const slider = document.createElement('input');
         slider.type = 'range';
         slider.min = min.toString();
@@ -165,6 +288,14 @@ export class SettingsUI {
         slider.value = value.toString();
         slider.className = 'settings-slider';
         
+        // Розрахувати відсоток заповнення
+        const updateFill = () => {
+            const currentValue = parseFloat(slider.value);
+            const percentage = ((currentValue - min) / (max - min)) * 100;
+            slider.style.setProperty('--slider-fill', `${percentage}%`);
+        };
+        updateFill();
+        
         const valueDisplay = document.createElement('span');
         valueDisplay.className = 'settings-value';
         valueDisplay.textContent = value.toString();
@@ -172,6 +303,7 @@ export class SettingsUI {
         slider.addEventListener('input', (e) => {
             const newValue = parseInt((e.target as HTMLInputElement).value);
             valueDisplay.textContent = newValue.toString();
+            updateFill();
             // Відтворити звук натискання
             this.soundManager.playSound('btn-press');
             this.settings.update({ [settingKey]: newValue } as Partial<GameSettings>);
@@ -180,8 +312,10 @@ export class SettingsUI {
             }
         });
         
-        sliderContainer.appendChild(slider);
-        sliderContainer.appendChild(valueDisplay);
+        sliderWrapper.appendChild(borderElement);
+        sliderWrapper.appendChild(slider);
+        sliderWrapper.appendChild(valueDisplay);
+        sliderContainer.appendChild(sliderWrapper);
         
         group.appendChild(labelEl);
         group.appendChild(sliderContainer);
@@ -189,8 +323,8 @@ export class SettingsUI {
         return group;
     }
 
-    // Створити групу з чекбоксом
-    private createCheckboxGroup(
+    // Створити групу з перемикачем ON/OFF
+    private createToggleGroup(
         label: string,
         settingKey: keyof GameSettings,
         value: boolean
@@ -199,30 +333,63 @@ export class SettingsUI {
         group.className = 'settings-group';
         
         const labelEl = document.createElement('label');
-        labelEl.className = 'settings-checkbox-label';
+        labelEl.className = 'settings-label';
+        labelEl.textContent = label;
         
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = value;
-        checkbox.className = 'settings-checkbox';
+        const toggleContainer = document.createElement('div');
+        toggleContainer.className = 'settings-toggle-container';
         
-        const labelText = document.createElement('span');
-        labelText.textContent = label;
+        const toggleWrapper = document.createElement('div');
+        toggleWrapper.className = 'settings-toggle-wrapper';
         
-        checkbox.addEventListener('change', (e) => {
-            const newValue = (e.target as HTMLInputElement).checked;
-            const isSoundEnabledCheckbox = settingKey === 'isSoundEnabled';
+        // Створити кнопку OFF
+        const offBtn = document.createElement('button');
+        offBtn.className = `settings-toggle-btn settings-toggle-off ${!value ? 'active' : ''}`;
+        offBtn.textContent = this.localization.t('toggleOffLabel');
+        
+        // Створити кнопку ON
+        const onBtn = document.createElement('button');
+        onBtn.className = `settings-toggle-btn settings-toggle-on ${value ? 'active' : ''}`;
+        onBtn.textContent = this.localization.t('toggleOnLabel');
+        
+        const updateToggle = (newValue: boolean) => {
+            if (newValue) {
+                onBtn.classList.add('active');
+                offBtn.classList.remove('active');
+            } else {
+                offBtn.classList.add('active');
+                onBtn.classList.remove('active');
+            }
+        };
+        
+        // Обробник кліку на OFF
+        offBtn.addEventListener('click', () => {
+            const isSoundEnabledToggle = settingKey === 'isSoundEnabled';
             
-            // Відтворити звук натискання (якщо звук вже увімкнений або це не прапорець звуку)
-            if (!isSoundEnabledCheckbox || this.settings.get('isSoundEnabled')) {
+            if (!isSoundEnabledToggle || this.settings.get('isSoundEnabled')) {
                 this.soundManager.playSound('btn-press');
             }
             
-            this.settings.update({ [settingKey]: newValue } as Partial<GameSettings>);
+            updateToggle(false);
+            this.settings.update({ [settingKey]: false } as Partial<GameSettings>);
             
-            // Якщо це увімкнення звуку, відтворити звук після оновлення налаштувань
-            if (isSoundEnabledCheckbox && newValue) {
-                // Використати setTimeout щоб переконатися, що налаштування оновлені через callback
+            if (this.onSettingsChangeCallback) {
+                this.onSettingsChangeCallback(this.settings.getAll());
+            }
+        });
+        
+        // Обробник кліку на ON
+        onBtn.addEventListener('click', () => {
+            const isSoundEnabledToggle = settingKey === 'isSoundEnabled';
+            
+            if (!isSoundEnabledToggle || this.settings.get('isSoundEnabled')) {
+                this.soundManager.playSound('btn-press');
+            }
+            
+            updateToggle(true);
+            this.settings.update({ [settingKey]: true } as Partial<GameSettings>);
+            
+            if (isSoundEnabledToggle) {
                 setTimeout(() => {
                     this.soundManager.playSound('btn-press');
                 }, 10);
@@ -233,62 +400,126 @@ export class SettingsUI {
             }
         });
         
-        labelEl.appendChild(checkbox);
-        labelEl.appendChild(labelText);
+        toggleWrapper.appendChild(offBtn);
+        toggleWrapper.appendChild(onBtn);
+        toggleContainer.appendChild(toggleWrapper);
+        
         group.appendChild(labelEl);
+        group.appendChild(toggleContainer);
         
         return group;
+    }
+
+    // Створити групу з чекбоксом (залишаємо для сумісності)
+    private createCheckboxGroup(
+        label: string,
+        settingKey: keyof GameSettings,
+        value: boolean
+    ): HTMLDivElement {
+        return this.createToggleGroup(label, settingKey, value);
     }
 
     // Створити групу з вибором мови
     private createLanguageGroup(): HTMLDivElement {
         const group = document.createElement('div');
-        group.className = 'settings-group';
+        group.className = 'settings-group settings-language-group';
         
         const labelEl = document.createElement('label');
         labelEl.textContent = this.localization.t('languageLabel');
-        labelEl.className = 'settings-label';
+        labelEl.className = 'settings-label settings-language-label';
         
-        const selectContainer = document.createElement('div');
-        selectContainer.className = 'settings-select-container';
+        const selectorContainer = document.createElement('div');
+        selectorContainer.className = 'settings-language-selector-container';
         
-        const select = document.createElement('select');
-        select.className = 'settings-select';
+        const selectorBox = document.createElement('div');
+        selectorBox.className = 'settings-language-selector-box';
         
-        const optionUk = document.createElement('option');
-        optionUk.value = 'uk';
-        optionUk.textContent = this.localization.t('languageUk');
-        if (this.settings.get('language') === 'uk') {
-            optionUk.selected = true;
-        }
+        // Left chevron
+        const leftChevron = document.createElement('button');
+        leftChevron.className = 'settings-language-chevron settings-language-chevron-left';
+        leftChevron.textContent = '<';
+        leftChevron.setAttribute('aria-label', 'Previous language');
         
-        const optionEn = document.createElement('option');
-        optionEn.value = 'en';
-        optionEn.textContent = this.localization.t('languageEn');
-        if (this.settings.get('language') === 'en') {
-            optionEn.selected = true;
-        }
+        // Current selection display
+        const currentDisplay = document.createElement('span');
+        currentDisplay.className = 'settings-language-current';
+        this.updateLanguageDisplay(currentDisplay);
         
-        select.appendChild(optionUk);
-        select.appendChild(optionEn);
+        // Right chevron
+        const rightChevron = document.createElement('button');
+        rightChevron.className = 'settings-language-chevron settings-language-chevron-right';
+        rightChevron.textContent = '>';
+        rightChevron.setAttribute('aria-label', 'Next language');
         
-        select.addEventListener('change', (e) => {
-            const newLanguage = (e.target as HTMLSelectElement).value as 'uk' | 'en';
-            // Відтворити звук натискання
+        // Indicator dots (two dots for two languages)
+        const dotsContainer = document.createElement('div');
+        dotsContainer.className = 'settings-language-dots';
+        
+        const dot1 = document.createElement('span');
+        dot1.className = 'settings-language-dot';
+        const dot2 = document.createElement('span');
+        dot2.className = 'settings-language-dot';
+        
+        dotsContainer.appendChild(dot1);
+        dotsContainer.appendChild(dot2);
+        
+        // Update dots based on current language
+        const updateDots = () => {
+            const currentLang = this.settings.get('language');
+            dot1.classList.toggle('active', currentLang === 'uk');
+            dot2.classList.toggle('active', currentLang === 'en');
+        };
+        updateDots();
+        
+        // Left chevron click handler
+        leftChevron.addEventListener('click', () => {
             this.soundManager.playSound('btn-press');
+            const currentLang = this.settings.get('language');
+            const newLanguage = currentLang === 'uk' ? 'en' : 'uk';
             this.settings.update({ language: newLanguage });
             this.localization.setLanguage(newLanguage);
+            this.updateLanguageDisplay(currentDisplay);
+            updateDots();
             if (this.onSettingsChangeCallback) {
                 this.onSettingsChangeCallback(this.settings.getAll());
             }
         });
         
-        selectContainer.appendChild(select);
+        // Right chevron click handler
+        rightChevron.addEventListener('click', () => {
+            this.soundManager.playSound('btn-press');
+            const currentLang = this.settings.get('language');
+            const newLanguage = currentLang === 'uk' ? 'en' : 'uk';
+            this.settings.update({ language: newLanguage });
+            this.localization.setLanguage(newLanguage);
+            this.updateLanguageDisplay(currentDisplay);
+            updateDots();
+            if (this.onSettingsChangeCallback) {
+                this.onSettingsChangeCallback(this.settings.getAll());
+            }
+        });
+        
+        selectorBox.appendChild(leftChevron);
+        selectorBox.appendChild(currentDisplay);
+        selectorBox.appendChild(rightChevron);
+        selectorBox.appendChild(dotsContainer);
+        
+        selectorContainer.appendChild(selectorBox);
         
         group.appendChild(labelEl);
-        group.appendChild(selectContainer);
+        group.appendChild(selectorContainer);
         
         return group;
+    }
+    
+    // Оновити відображення поточної мови
+    private updateLanguageDisplay(element: HTMLElement): void {
+        const currentLang = this.settings.get('language');
+        if (currentLang === 'uk') {
+            element.textContent = this.localization.t('languageUk');
+        } else {
+            element.textContent = this.localization.t('languageEn');
+        }
     }
 
     // Обробка скидання налаштувань
@@ -318,6 +549,12 @@ export class SettingsUI {
         if (this.settingsModal) {
             // Зберегти старий callback тимчасово
             const oldCallback = this.onCloseCallback;
+            // Зберегти активну вкладку перед закриттям
+            const activeTab = this.settingsModal.querySelector('.settings-tab.active');
+            if (activeTab) {
+                const tabs = Array.from(this.settingsModal.querySelectorAll('.settings-tab'));
+                this.activeTabIndex = tabs.indexOf(activeTab);
+            }
             // Очистити callback, щоб close() не викликав його
             this.onCloseCallback = null;
             this.close();
@@ -325,6 +562,9 @@ export class SettingsUI {
             if (!onClose && oldCallback) {
                 this.onCloseCallback = oldCallback;
             }
+        } else {
+            // Якщо модальне вікно не існує, встановити активну вкладку за замовчуванням
+            this.activeTabIndex = 0;
         }
         // Встановити новий callback
         if (onClose) {

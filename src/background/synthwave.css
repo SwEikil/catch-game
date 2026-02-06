@@ -1,0 +1,528 @@
+/* ==================== SYNTHWAVE BACKGROUND ==================== */
+/* Exact Retro-Synthwave / Outrun layout                          */
+/* Z-index layers: sky(0) → stars(1) → mountains(1) → sun(2) → grid(3) */
+
+/* ------------------------------------------------------------------ */
+/* 1. CONTAINER                                                       */
+/* ------------------------------------------------------------------ */
+.synthwave-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    pointer-events: none;
+
+    /* Beat-controller CSS custom properties */
+    --synthwave-mountain-scale: 1.06;
+    --synthwave-mountain-translate: -8px;
+    --synthwave-mountain-speed: 2.8s;
+    --synthwave-grid-speed: 2.2s;
+}
+
+/* Затемнення всього фону */
+.synthwave-background::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);  /* 35% затемнення */
+    z-index: 10;  /* Поверх всіх елементів фону */
+    pointer-events: none;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. SKY                                                             */
+/* ------------------------------------------------------------------ */
+.sky {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        180deg,
+        #020223 0%,
+        #1a0a2e 50%,
+        #240B36 100%
+    );
+    z-index: 0;
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. STARS  (~90 random white dots via box-shadow)                    */
+/* ------------------------------------------------------------------ */
+.stars {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 60%;
+    z-index: 1;
+}
+
+.stars::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    animation: star-twinkle 4s ease-in-out infinite alternate;
+    box-shadow:
+        /* 0 – 10 vh */
+        2vw 3vh 0 1px rgba(255,255,255,0.9),
+        8vw 7vh 0 1px rgba(255,255,255,0.8),
+        14vw 4vh 0 0.5px rgba(255,255,255,0.9),
+        18vw 1vh 0 1.5px rgba(255,255,255,1),
+        26vw 2vh 0 1px rgba(255,255,255,0.9),
+        35vw 6vh 0 0.5px rgba(255,255,255,0.7),
+        41vw 3vh 0 1.5px rgba(255,255,255,0.9),
+        47vw 8vh 0 1px rgba(255,255,255,0.8),
+        53vw 5vh 0 1px rgba(255,255,255,0.9),
+        59vw 10vh 0 1.5px rgba(255,255,255,0.8),
+        65vw 2vh 0 1px rgba(255,255,255,0.9),
+        71vw 7vh 0 1px rgba(255,255,255,0.8),
+        77vw 4vh 0 1.5px rgba(255,255,255,0.9),
+        83vw 9vh 0 1px rgba(255,255,255,0.8),
+        89vw 6vh 0 1px rgba(255,255,255,0.9),
+        95vw 3vh 0 1px rgba(255,255,255,0.8),
+        /* 10 – 20 vh */
+        5vw 12vh 0 0.5px rgba(255,255,255,0.7),
+        11vw 18vh 0 1px rgba(255,255,255,0.6),
+        17vw 14vh 0 0.5px rgba(255,255,255,0.7),
+        23vw 15vh 0 0.5px rgba(255,255,255,0.6),
+        32vw 11vh 0 1px rgba(255,255,255,0.8),
+        38vw 20vh 0 1px rgba(255,255,255,0.6),
+        44vw 16vh 0 0.5px rgba(255,255,255,0.7),
+        50vw 19vh 0 0.5px rgba(255,255,255,0.5),
+        56vw 14vh 0 0.5px rgba(255,255,255,0.7),
+        62vw 18vh 0 0.5px rgba(255,255,255,0.6),
+        68vw 17vh 0 0.5px rgba(255,255,255,0.7),
+        74vw 12vh 0 0.5px rgba(255,255,255,0.5),
+        80vw 13vh 0 0.5px rgba(255,255,255,0.7),
+        86vw 19vh 0 0.5px rgba(255,255,255,0.6),
+        92vw 16vh 0 0.5px rgba(255,255,255,0.7),
+        /* 20 – 35 vh */
+        3vw 22vh 0 0.5px rgba(255,255,255,0.5),
+        7vw 28vh 0 1px rgba(255,255,255,0.6),
+        12vw 25vh 0 0.5px rgba(255,255,255,0.7),
+        20vw 30vh 0 1.5px rgba(255,255,255,0.8),
+        25vw 34vh 0 1px rgba(255,255,255,0.6),
+        29vw 22vh 0 0.5px rgba(255,255,255,0.5),
+        34vw 28vh 0 0.5px rgba(255,255,255,0.4),
+        39vw 26vh 0 0.5px rgba(255,255,255,0.7),
+        43vw 32vh 0 1px rgba(255,255,255,0.5),
+        48vw 24vh 0 0.5px rgba(255,255,255,0.6),
+        52vw 29vh 0 1px rgba(255,255,255,0.5),
+        57vw 35vh 0 0.5px rgba(255,255,255,0.4),
+        61vw 23vh 0 1px rgba(255,255,255,0.6),
+        66vw 31vh 0 0.5px rgba(255,255,255,0.5),
+        70vw 27vh 0 1px rgba(255,255,255,0.7),
+        75vw 33vh 0 0.5px rgba(255,255,255,0.5),
+        79vw 22vh 0 0.5px rgba(255,255,255,0.4),
+        84vw 28vh 0 0.5px rgba(255,255,255,0.6),
+        88vw 35vh 0 1px rgba(255,255,255,0.5),
+        93vw 31vh 0 0.5px rgba(255,255,255,0.7),
+        97vw 24vh 0 0.5px rgba(255,255,255,0.4),
+        /* 35 – 55 vh */
+        4vw 38vh 0 0.5px rgba(255,255,255,0.4),
+        10vw 42vh 0 0.5px rgba(255,255,255,0.3),
+        15vw 36vh 0 0.5px rgba(255,255,255,0.4),
+        21vw 44vh 0 0.5px rgba(255,255,255,0.3),
+        28vw 40vh 0 1px rgba(255,255,255,0.4),
+        33vw 38vh 0 0.5px rgba(255,255,255,0.3),
+        37vw 46vh 0 0.5px rgba(255,255,255,0.4),
+        42vw 43vh 0 0.5px rgba(255,255,255,0.3),
+        46vw 36vh 0 0.5px rgba(255,255,255,0.3),
+        51vw 48vh 0 0.5px rgba(255,255,255,0.3),
+        55vw 40vh 0 0.5px rgba(255,255,255,0.4),
+        60vw 45vh 0 0.5px rgba(255,255,255,0.3),
+        64vw 38vh 0 0.5px rgba(255,255,255,0.4),
+        69vw 44vh 0 0.5px rgba(255,255,255,0.3),
+        73vw 41vh 0 0.5px rgba(255,255,255,0.3),
+        78vw 46vh 0 0.5px rgba(255,255,255,0.4),
+        82vw 37vh 0 0.5px rgba(255,255,255,0.3),
+        87vw 43vh 0 0.5px rgba(255,255,255,0.3),
+        91vw 39vh 0 0.5px rgba(255,255,255,0.4),
+        96vw 47vh 0 0.5px rgba(255,255,255,0.3);
+}
+
+@keyframes star-twinkle {
+    0%   { opacity: 0.8; }
+    100% { opacity: 1; }
+}
+
+/* ------------------------------------------------------------------ */
+/* 4. SUN                                                             */
+/* ------------------------------------------------------------------ */
+.sun {
+    position: absolute;
+    bottom: clamp(22%, 100vh - 650px, 18%);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    z-index: 2;
+
+    /* Glow lives on the host element (unmasked) */
+    box-shadow:
+        0 0 80px 40px rgba(255, 100, 0, 0.6),
+        0 0 120px 60px rgba(255, 50, 100, 0.3);
+}
+
+/* Gradient + scanlines on pseudo-element so mask won't clip the glow */
+.sun::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: linear-gradient(
+        180deg,
+        #FDE910 0%,
+        #FF8C00 40%,
+        #FF4500 70%,
+        #FF0055 100%
+    );
+
+    /* Scanlines – stripes that grow wider toward the bottom */
+    mask-image: repeating-linear-gradient(
+        0deg,
+        black 0px,
+        black 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    -webkit-mask-image: repeating-linear-gradient(
+        0deg,
+        black 0px,
+        black 8px,
+        transparent 8px,
+        transparent 16px
+    );
+}
+
+/* ------------------------------------------------------------------ */
+/* 5. MOUNTAINS  (split LEFT / RIGHT, z-index 1 = behind sun)        */
+/* ------------------------------------------------------------------ */
+.mountain-left,
+.mountain-right {
+    position: absolute;
+    bottom: clamp(16%, 100vh - 650px, 18%);
+    width: 40%;
+    height: 200px;
+    z-index: 1;
+    overflow: visible;
+}
+
+.mountain-left {
+    left: 0;
+}
+
+.mountain-right {
+    right: 0;
+}
+
+/* Wireframe mountain layer */
+.mountain {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    /* Wireframe grid – no solid fill, only cyan lines */
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 28px,
+            rgba(0, 255, 255, 0.3) 28px,
+            rgba(0, 255, 255, 0.3) 30px
+        ),
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 18px,
+            rgba(0, 255, 255, 0.2) 18px,
+            rgba(0, 255, 255, 0.2) 20px
+        );
+    filter: drop-shadow(0 0 10px rgba(0, 255, 255, 0.6));
+    transform-origin: bottom;
+    animation: mountain-pulse var(--synthwave-mountain-speed) ease-in-out infinite;
+}
+
+/* Bright top-edge glow (cyan outline along the ridgeline) */
+.mountain::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: inherit;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 255, 255, 0.9) 0%,
+        rgba(0, 255, 255, 0.3) 8%,
+        transparent 20%
+    );
+    pointer-events: none;
+}
+
+/* ---- Left-side shapes (peaks rise toward center / right) ---- */
+.mountain-left .mountain:nth-child(1) {
+    clip-path: polygon(
+        0% 100%,
+        0% 90%,
+        8% 78%,
+        16% 84%,
+        24% 62%,
+        32% 72%,
+        40% 52%,
+        48% 58%,
+        56% 42%,
+        64% 48%,
+        72% 35%,
+        80% 40%,
+        88% 30%,
+        96% 42%,
+        100% 55%,
+        100% 100%
+    );
+}
+
+.mountain-left .mountain:nth-child(2) {
+    height: 75%;
+    opacity: 0.6;
+    animation-delay: 0.4s;
+    clip-path: polygon(
+        0% 100%,
+        0% 85%,
+        10% 72%,
+        20% 80%,
+        30% 58%,
+        40% 68%,
+        50% 48%,
+        60% 55%,
+        70% 40%,
+        80% 50%,
+        90% 38%,
+        100% 50%,
+        100% 100%
+    );
+}
+
+/* ---- Right-side shapes (peaks rise toward center / left) ---- */
+.mountain-right .mountain:nth-child(1) {
+    clip-path: polygon(
+        0% 55%,
+        4% 42%,
+        12% 30%,
+        20% 40%,
+        28% 35%,
+        36% 48%,
+        44% 42%,
+        52% 58%,
+        60% 52%,
+        68% 72%,
+        76% 62%,
+        84% 84%,
+        92% 78%,
+        100% 90%,
+        100% 100%,
+        0% 100%
+    );
+}
+
+.mountain-right .mountain:nth-child(2) {
+    height: 75%;
+    opacity: 0.6;
+    animation-delay: 0.4s;
+    clip-path: polygon(
+        0% 50%,
+        10% 38%,
+        20% 50%,
+        30% 40%,
+        40% 55%,
+        50% 48%,
+        60% 68%,
+        70% 58%,
+        80% 80%,
+        90% 72%,
+        100% 85%,
+        100% 100%,
+        0% 100%
+    );
+}
+
+@keyframes mountain-pulse {
+    0%, 100% {
+        transform: scaleY(1) translateY(0);
+    }
+    50% {
+        transform: scaleY(var(--synthwave-mountain-scale)) translateY(var(--synthwave-mountain-translate));
+    }
+}
+
+/* ------------------------------------------------------------------ */
+/* 6. GRID FLOOR                                                      */
+/* ------------------------------------------------------------------ */
+.grid-floor {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    margin-bottom: -80px;
+    transform: translateX(-50%) perspective(600px) rotateX(65deg);
+    width: 120%;
+    height: clamp(300px, 42vh, 450px);
+    z-index: 3;
+
+    background-image:
+        repeating-linear-gradient(
+            0deg,
+            transparent,
+            transparent 49px,
+            #FF00FF 49px,
+            #FF00FF 51px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            transparent,
+            transparent 49px,
+            #FF00FF 49px,
+            #FF00FF 51px
+        );
+    background-size: 50px 50px;
+
+    /* Fade out at the horizon */
+    mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 50%,
+        black 100%
+    );
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        transparent 0%,
+        black 50%,
+        black 100%
+    );
+
+    animation: grid-move var(--synthwave-grid-speed) linear infinite;
+}
+
+@keyframes grid-move {
+    from { background-position: 0 0; }
+    to   { background-position: 0 50px; }
+}
+
+/* ------------------------------------------------------------------ */
+/* 7. GAME-MODE VARIANT (darker overlay)                              */
+/* ------------------------------------------------------------------ */
+.synthwave-background--game::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.synthwave-background--game .sun {
+    opacity: 0.55;
+}
+
+.synthwave-background--game .stars::after {
+    opacity: 0.4;
+}
+
+/* ------------------------------------------------------------------ */
+/* 8. CONTENT LAYERING  (menu & game content above background)        */
+/* ------------------------------------------------------------------ */
+
+/* Menu content above background */
+.main-menu > .synthwave-background {
+    z-index: 0;
+}
+
+.main-menu > .main-menu-title-container,
+.main-menu > .main-menu-buttons {
+    position: relative;
+    z-index: 10;
+}
+
+.main-menu::before,
+.main-menu::after {
+    z-index: 5;
+}
+
+/* Game-UI content above background */
+.game-ui {
+    position: relative;
+}
+
+.game-ui#app {
+    background: transparent;
+}
+
+.game-ui > *:not(.synthwave-background) {
+    position: relative;
+    z-index: 5;
+}
+
+.game-ui > .synthwave-background {
+    z-index: 0;
+}
+
+@media (max-aspect-ratio: 3/4) {
+    .grid-floor {
+      height: 280px;
+      transform: translateX(-50%) perspective(500px) rotateX(70deg);
+    }
+    
+    .sun {
+      bottom: 18%;
+    }
+  }
+  
+  /* Високі екрани (desktop monitors) — опускаємо сонце і гори */
+@media (min-height: 900px) {
+    .sun {
+      bottom: 18%;  /* Нижче */
+    }
+    
+    .mountain-left,
+    .mountain-right {
+      bottom: 14%;  /* Нижче */
+    }
+  }
+  
+  @media (min-height: 1200px) {
+    .sun {
+      bottom: 15%;  /* Ще нижче */
+    }
+    
+    .mountain-left,
+    .mountain-right {
+      bottom: 11%;
+    }
+  }
+  
+  /* Дуже вузькі екрани (портрет) — трохи вище і менше */
+  @media (max-aspect-ratio: 3/4) {
+    .sun {
+      bottom: 11%;
+    }
+    
+    .mountain-left,
+    .mountain-right {
+      bottom: 7%;
+    }
+    
+    .grid-floor {
+      height: 300px;
+    }
+  }
+  
+  /* Широкі екрани (ultrawide monitors) */
+  @media (min-aspect-ratio: 21/9) {
+    .grid-floor {
+      width: 140%;
+    }
+}

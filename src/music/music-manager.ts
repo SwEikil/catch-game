@@ -1,11 +1,18 @@
 import menuTheme from '../assets/music/zapsplat_menu-theme.mp3';
-import gameTheme from '../assets/music/zapsplat_game-theme.mp3';
+import classicTheme from '../assets/music/zapsplat_classic.mp3';
+import infiniteTheme from '../assets/music/zapsplat_infinite.mp3';
+import hardcoreTheme from '../assets/music/zapsplat_hardcore.mp3';
+import customTheme from '../assets/music/zapsplat_custom.mp3';
+import type { GameMode } from '../settings/types';
 
-export type MusicType = 'menu-theme' | 'game-theme';
+export type MusicType = 'menu-theme' | 'classic' | 'infinite' | 'hardcore' | 'custom';
 
 export class MusicManager {
     private menuAudio: HTMLAudioElement;
-    private gameAudio: HTMLAudioElement;
+    private classicAudio: HTMLAudioElement;
+    private infiniteAudio: HTMLAudioElement;
+    private hardcoreAudio: HTMLAudioElement;
+    private customAudio: HTMLAudioElement;
     private currentMusic: MusicType | null = null;
     private lastPlayedMusic: MusicType | null = null; // Зберігаємо останній трек навіть після вимкнення
     private volume: number = 50; // 0-100
@@ -14,21 +21,34 @@ export class MusicManager {
     private crossfadeInterval: number | null = null;
 
     constructor() {
-        // Створити Audio елементи для обох треків
+        // Створити Audio елементи для всіх треків
         this.menuAudio = new Audio(menuTheme);
-        this.gameAudio = new Audio(gameTheme);
+        this.classicAudio = new Audio(classicTheme);
+        this.infiniteAudio = new Audio(infiniteTheme);
+        this.hardcoreAudio = new Audio(hardcoreTheme);
+        this.customAudio = new Audio(customTheme);
         
         // Налаштувати для циклічного відтворення
         this.menuAudio.loop = true;
-        this.gameAudio.loop = true;
+        this.classicAudio.loop = true;
+        this.infiniteAudio.loop = true;
+        this.hardcoreAudio.loop = true;
+        this.customAudio.loop = true;
         
         // Встановити гучність
-        this.menuAudio.volume = this.volume / 100;
-        this.gameAudio.volume = this.volume / 100;
+        const volumeValue = this.volume / 100;
+        this.menuAudio.volume = volumeValue;
+        this.classicAudio.volume = volumeValue;
+        this.infiniteAudio.volume = volumeValue;
+        this.hardcoreAudio.volume = volumeValue;
+        this.customAudio.volume = volumeValue;
         
         // Завантажити музику заздалегідь
         this.menuAudio.preload = 'auto';
-        this.gameAudio.preload = 'auto';
+        this.classicAudio.preload = 'auto';
+        this.infiniteAudio.preload = 'auto';
+        this.hardcoreAudio.preload = 'auto';
+        this.customAudio.preload = 'auto';
     }
 
     // Почати відтворення menu-theme
@@ -46,26 +66,62 @@ export class MusicManager {
         this.crossfadeTo('menu-theme');
     }
 
-    // Почати відтворення game-theme
-    playGameTheme(): void {
-        this.lastPlayedMusic = 'game-theme';
+    // UA: Почати відтворення теми для режиму гри
+    // EN: Start playing theme for game mode
+    playGameTheme(mode: GameMode = 'classic'): void {
+        let musicType: MusicType;
+        
+        switch (mode) {
+            case 'classic':
+                musicType = 'classic';
+                break;
+            case 'infinite':
+                musicType = 'infinite';
+                break;
+            case 'hardcore':
+                musicType = 'hardcore';
+                break;
+            case 'custom':
+                musicType = 'custom';
+                break;
+            default:
+                musicType = 'classic';
+        }
+        
+        this.lastPlayedMusic = musicType;
         
         if (!this.isEnabled) {
             return;
         }
 
-        if (this.currentMusic === 'game-theme') {
+        if (this.currentMusic === musicType) {
             return; // Вже грає
         }
 
-        this.crossfadeTo('game-theme');
+        this.crossfadeTo(musicType);
+    }
+
+    // UA: Отримати Audio елемент за типом музики
+    // EN: Get Audio element by music type
+    private getAudioByType(musicType: MusicType): HTMLAudioElement {
+        switch (musicType) {
+            case 'menu-theme':
+                return this.menuAudio;
+            case 'classic':
+                return this.classicAudio;
+            case 'infinite':
+                return this.infiniteAudio;
+            case 'hardcore':
+                return this.hardcoreAudio;
+            case 'custom':
+                return this.customAudio;
+        }
     }
 
     // Плавний перехід між треками
     private crossfadeTo(targetMusic: MusicType): void {
-        const targetAudio = targetMusic === 'menu-theme' ? this.menuAudio : this.gameAudio;
-        const currentAudio = this.currentMusic === 'menu-theme' ? this.menuAudio : 
-                            this.currentMusic === 'game-theme' ? this.gameAudio : null;
+        const targetAudio = this.getAudioByType(targetMusic);
+        const currentAudio = this.currentMusic ? this.getAudioByType(this.currentMusic) : null;
 
         // Якщо немає поточної музики, просто запустити нову
         if (!currentAudio || currentAudio.paused) {
@@ -137,8 +193,14 @@ export class MusicManager {
 
         this.menuAudio.pause();
         this.menuAudio.currentTime = 0;
-        this.gameAudio.pause();
-        this.gameAudio.currentTime = 0;
+        this.classicAudio.pause();
+        this.classicAudio.currentTime = 0;
+        this.infiniteAudio.pause();
+        this.infiniteAudio.currentTime = 0;
+        this.hardcoreAudio.pause();
+        this.hardcoreAudio.currentTime = 0;
+        this.customAudio.pause();
+        this.customAudio.currentTime = 0;
         this.currentMusic = null;
         // Не скидаємо lastPlayedMusic, щоб знати що відтворювати при повторному увімкненні
     }
@@ -149,10 +211,9 @@ export class MusicManager {
         const volumeValue = this.volume / 100;
         
         // Оновити гучність поточного треку
-        if (this.currentMusic === 'menu-theme') {
-            this.menuAudio.volume = volumeValue;
-        } else if (this.currentMusic === 'game-theme') {
-            this.gameAudio.volume = volumeValue;
+        if (this.currentMusic) {
+            const currentAudio = this.getAudioByType(this.currentMusic);
+            currentAudio.volume = volumeValue;
         }
     }
 
@@ -164,10 +225,12 @@ export class MusicManager {
             this.stop();
         } else {
             // Якщо музика увімкнена, відтворити останній трек або menu-theme за замовчуванням
-            if (this.lastPlayedMusic === 'game-theme') {
-                this.playGameTheme();
-            } else if (this.lastPlayedMusic === 'menu-theme') {
+            if (this.lastPlayedMusic === 'menu-theme') {
                 this.playMenuTheme();
+            } else if (this.lastPlayedMusic && this.lastPlayedMusic !== 'menu-theme') {
+                // Визначити режим гри з останньої теми
+                const mode = this.lastPlayedMusic as GameMode;
+                this.playGameTheme(mode);
             } else {
                 // Якщо нічого не грало раніше, почати з menu-theme
                 this.playMenuTheme();
@@ -185,5 +248,12 @@ export class MusicManager {
 
     getCurrentMusic(): MusicType | null {
         return this.currentMusic;
+    }
+
+    getCurrentAudioElement(): HTMLAudioElement | null {
+        if (!this.currentMusic) {
+            return null;
+        }
+        return this.getAudioByType(this.currentMusic);
     }
 }

@@ -5,8 +5,8 @@ export const GAME_CONFIG = {
 } as const;
 
 export const UI_TEXT = {
-    title: 'Catch the Fugitive',
-    description: 'Catch the fugitive before time runs out!',
+    title: 'Aim Training',
+    description: 'Train your aim before time runs out!',
     scoreLabel: 'Score:',
     timeLabel: 'Time:',
     gameOverTitle: 'Time\'s up!',

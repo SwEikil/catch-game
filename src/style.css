@@ -1,15 +1,24 @@
 /* ==================== КІБЕРПАНК СТИЛЬ (CYBERPUNK 2077) ==================== */
 
-/* Приглушені кольори в стилі Cyberpunk 2077 */
+/* Кольори в стилі Cyberpunk 2077 зі скріншотів */
 :root {
-  --neon-pink: #ff4da6;        /* Менш яскравий рожевий */
-  --neon-cyan: #00d9ff;        /* Приглушений ціановий */
-  --neon-purple: #8b5cf6;      /* М'який фіолетовий */
-  --neon-red: #ff0040;         /* Приглушений червоний */
-  --neon-blue: #0099cc;       /* М'який синій */
+  --neon-pink: #ff4da6;
+  --neon-cyan: #00d9ff;
+  --neon-blue: #00d9ff;        /* Яскравий ціановий синій для ON стану (як на скріншотах) */
+  --neon-blue-dark: #0099cc;   /* Темніший синій */
+  --neon-red: #ff0040;         /* Яскравий червоний для OFF стану */
+  --neon-red-dark: #cc0033;    /* Темніший червоний */
   --dark-bg: #0a0a0f;
   --darker-bg: #050508;
-  --grid-color: rgba(0, 217, 255, 0.05);  /* Дуже слабка сітка */
+  --panel-bg: rgba(10, 10, 15, 0.98);
+  --border-color: rgba(0, 217, 255, 0.3);
+  --border-color-active: rgba(0, 217, 255, 0.6);
+  --text-primary: rgba(0, 217, 255, 0.95);  /* Яскравіший синій текст */
+  --text-secondary: rgba(255, 0, 64, 0.95);  /* Яскравіший червоний текст */
+  --text-muted: rgba(0, 217, 255, 0.6);     /* Приглушений синій */
+  --grid-color: rgba(0, 217, 255, 0.05);
+  --shadow-blue: rgba(0, 217, 255, 0.4);
+  --shadow-red: rgba(255, 0, 64, 0.4);
 }
 
 /* Загальні стилі */
@@ -23,36 +32,36 @@ body {
   background: var(--dark-bg);
   font-family: 'Courier New', 'Monaco', monospace;
   overflow: hidden;
+  color: var(--text-primary);
 }
 
-/* ==================== КАСТОМНИЙ СКРОЛБАР ==================== */
-/* Webkit browsers (Chrome, Safari, Edge) */
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Додатковий фоновий ефект - цифрові паттерни */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 217, 255, 0.02) 2px,
+      rgba(0, 217, 255, 0.02) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 217, 255, 0.02) 2px,
+      rgba(0, 217, 255, 0.02) 4px
+    );
+  pointer-events: none;
+  z-index: -1;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, rgba(255, 0, 64, 0.6), rgba(0, 217, 255, 0.6));
-  border-radius: 5px;
-  border: 1px solid rgba(0, 217, 255, 0.3);
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, rgba(255, 0, 64, 0.8), rgba(0, 217, 255, 0.8));
-  box-shadow: 0 0 8px rgba(0, 217, 255, 0.4);
-}
-
-/* Firefox */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 217, 255, 0.6) rgba(0, 0, 0, 0.3);
-}
 
 /* ==================== APP КОНТЕЙНЕР ==================== */
 #app {
@@ -66,26 +75,22 @@ body {
   flex-direction: column;
 }
 
-/* Заголовок - м'яке світіння */
+/* Заголовок - яскраве світіння */
 #app h1 {
-  color: var(--neon-cyan);
-  font-size: 2.5rem;
+  color: #ffbd00;
+  font-size: 6rem;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 3px;
   margin: 20px 0 10px 0;
-  text-shadow: 
-    0 0 5px rgba(0, 217, 255, 0.5),
-    0 0 10px rgba(0, 217, 255, 0.3);
   animation: glow-pulse 3s ease-in-out infinite alternate;
 }
 
-/* Опис - приглушений */
+/* Опис - неоновий рожевий */
 #app p {
-  color: rgba(255, 77, 166, 0.8);  /* Напівпрозорий рожевий */
+  color: #ff4da6;  /* Чистий неоновий рожевий/магента */
   font-size: 1rem;
   margin-bottom: 15px;
-  text-shadow: 0 0 3px rgba(255, 77, 166, 0.4);
   letter-spacing: 1px;
 }
 
@@ -99,11 +104,11 @@ body {
   font-weight: bold;
   padding: 15px;
   background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(0, 217, 255, 0.4);  /* Тонша, менш яскрава межа */
-  border-radius: 10px;
+  border: 1px solid #00d9ff;  /* Чистий неоновий ціановий */
+  border-radius: 0;
   margin: 10px auto;
   box-shadow: 
-    0 0 8px rgba(0, 217, 255, 0.2),
+    0 0 10px rgba(0, 217, 255, 0.4),
     inset 0 0 10px rgba(0, 217, 255, 0.05);
   width: fit-content;
 }
@@ -116,16 +121,16 @@ body {
 }
 
 #stats-container label {
-  color: rgba(0, 217, 255, 0.9);  /* Читабельний ціановий */
-  text-shadow: 0 0 3px rgba(0, 217, 255, 0.3);
+  color: #00d9ff;  /* Чистий неоновий ціановий */
+  text-shadow: 0 0 8px #00d9ff;
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 #stats-container span {
-  color: rgba(255, 0, 64, 0.9);  /* Читабельний червоний */
-  text-shadow: 0 0 4px rgba(255, 0, 64, 0.4);
+  color: #ff0040;  /* Чистий неоновий червоний */
+  text-shadow: 0 0 8px #ff0040;
   font-weight: bold;
   min-width: 40px;
   text-align: left;

@@ -13,6 +13,11 @@ export interface Translations {
     
     // Settings
     settingsTitle: string;
+    soundTabLabel: string;
+    musicTabLabel: string;
+    languageTabLabel: string;
+    toggleOnLabel: string;
+    toggleOffLabel: string;
     gameTimeLabel: string;
     targetSizeLabel: string;
     spawnDelayLabel: string;
@@ -56,6 +61,11 @@ export const translations: Record<'uk' | 'en', Translations> = {
         gameOverScore: 'Твій рахунок:',
         restartBtn: 'Перезапустити',
         settingsTitle: 'Налаштування',
+        soundTabLabel: 'ЗВУК',
+        musicTabLabel: 'МУЗИКА',
+        languageTabLabel: 'МОВА',
+        toggleOnLabel: 'УВІМК',
+        toggleOffLabel: 'ВИМК',
         gameTimeLabel: 'Час гри (секунди)',
         targetSizeLabel: 'Розмір цілі (пікселі)',
         spawnDelayLabel: 'Час видимості цілі (мс)',
@@ -91,6 +101,11 @@ export const translations: Record<'uk' | 'en', Translations> = {
         gameOverScore: 'Your score:',
         restartBtn: 'Restart',
         settingsTitle: 'Settings',
+        soundTabLabel: 'SOUND',
+        musicTabLabel: 'MUSIC',
+        languageTabLabel: 'LANGUAGE',
+        toggleOnLabel: 'ON',
+        toggleOffLabel: 'OFF',
         gameTimeLabel: 'Game Time (seconds)',
         targetSizeLabel: 'Target Size (pixels)',
         spawnDelayLabel: 'Target Visibility Time (ms)',

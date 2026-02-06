@@ -12,6 +12,7 @@ export class GameUI {
     private scoreText!: HTMLSpanElement;
     private timeText!: HTMLSpanElement;
     private backToMenuBtn!: HTMLButtonElement;
+    private backgroundElement: HTMLDivElement | null = null;
 
     // ==================== ДОПОМІЖНІ ФУНКЦІЇ ДЛЯ СТВОРЕННЯ ЕЛЕМЕНТІВ ====================
     private createStatItem(labelText: string, valueId: string, initialValue: string): { container: HTMLDivElement; valueElement: HTMLSpanElement } {
@@ -31,31 +32,18 @@ export class GameUI {
         return { container, valueElement };
     }
 
-    private createHeader(title: string, description: string): { titleElement: HTMLHeadingElement; descriptionElement: HTMLParagraphElement } {
-        const titleElement = document.createElement('h1');
-        titleElement.textContent = title;
-        
-        const descriptionElement = document.createElement('p');
-        descriptionElement.textContent = description;
-        
-        return { titleElement, descriptionElement };
-    }
-
     // ==================== ІНІЦІАЛІЗАЦІЯ UI ====================
     init(initialTime: number, localization: Localization, soundManager?: SoundManager): void {
         this.localization = localization;
         this.soundManager = soundManager || null;
         this.app = document.createElement('div');
         this.app.id = UI_IDS.app;
+        this.app.className = 'game-ui';
         document.body.appendChild(this.app);
-        
-        // Заголовок та опис
-        const { titleElement, descriptionElement } = this.createHeader(
-            this.localization.t('title'),
-            this.localization.t('description')
-        );
-        this.app.appendChild(titleElement);
-        this.app.appendChild(descriptionElement);
+
+        const background = this.createSynthwaveBackground('game');
+        this.app.appendChild(background);
+        this.backgroundElement = background;
         
         // Контейнер для статистики
         this.statsContainer = document.createElement('div');
@@ -139,6 +127,10 @@ export class GameUI {
         return this.backToMenuBtn;
     }
 
+    getBackgroundElement(): HTMLDivElement | null {
+        return this.backgroundElement;
+    }
+
     // ==================== ЕКРАН КІНЦЯ ГРИ ====================
     hideGameElements(): void {
         if (this.statsContainer) this.statsContainer.style.display = 'none';
@@ -199,12 +191,6 @@ export class GameUI {
 
     // Оновити локалізовані тексти
     private updateLocalizedTexts(): void {
-        // Оновити заголовок та опис
-        const titleElement = this.app.querySelector('h1');
-        const descriptionElement = this.app.querySelector('p');
-        if (titleElement) titleElement.textContent = this.localization.t('title');
-        if (descriptionElement) descriptionElement.textContent = this.localization.t('description');
-        
         // Оновити labels
         const scoreLabel = this.app.querySelector('#score-container label');
         const timeLabel = this.app.querySelector('#time-container label');
@@ -215,6 +201,47 @@ export class GameUI {
         if (this.backToMenuBtn) {
             this.backToMenuBtn.textContent = this.localization.t('backToMenuBtn');
         }
+    }
+
+    private createSynthwaveBackground(variant: 'menu' | 'game'): HTMLDivElement {
+        const bg = document.createElement('div');
+        bg.className = `synthwave-background${variant === 'game' ? ' synthwave-background--game' : ''}`;
+
+        const sky = document.createElement('div');
+        sky.className = 'sky';
+        bg.appendChild(sky);
+
+        const stars = document.createElement('div');
+        stars.className = 'stars';
+        bg.appendChild(stars);
+
+        const mountainLeft = document.createElement('div');
+        mountainLeft.className = 'mountain-left';
+        for (let i = 0; i < 2; i += 1) {
+            const m = document.createElement('div');
+            m.className = 'mountain';
+            mountainLeft.appendChild(m);
+        }
+        bg.appendChild(mountainLeft);
+
+        const mountainRight = document.createElement('div');
+        mountainRight.className = 'mountain-right';
+        for (let i = 0; i < 2; i += 1) {
+            const m = document.createElement('div');
+            m.className = 'mountain';
+            mountainRight.appendChild(m);
+        }
+        bg.appendChild(mountainRight);
+
+        const sun = document.createElement('div');
+        sun.className = 'sun';
+        bg.appendChild(sun);
+
+        const gridFloor = document.createElement('div');
+        gridFloor.className = 'grid-floor';
+        bg.appendChild(gridFloor);
+
+        return bg;
     }
 
     // ==================== ВАЛІДАЦІЯ ====================

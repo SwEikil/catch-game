@@ -35,11 +35,24 @@ export class ModeSelectionMenu {
         menu.className = 'mode-selection-menu';
         menu.id = 'mode-selection-menu';
 
+        // Контент модального вікна
+        const content = document.createElement('div');
+        content.className = 'mode-selection-content';
+
         // Заголовок
-        const title = document.createElement('h1');
+        const header = document.createElement('div');
+        header.className = 'mode-selection-header';
+
+        const title = document.createElement('h2');
         title.className = 'mode-selection-title';
         title.textContent = this.localization.t('modeSelectionTitle');
-        menu.appendChild(title);
+        header.appendChild(title);
+
+        content.appendChild(header);
+
+        // Тіло меню
+        const body = document.createElement('div');
+        body.className = 'mode-selection-body';
 
         // Контейнер для кнопок режимів
         const modesContainer = document.createElement('div');
@@ -58,16 +71,21 @@ export class ModeSelectionMenu {
         const customBtn = this.createModeButton('custom', currentMode === 'custom');
         modesContainer.appendChild(customBtn);
 
-        menu.appendChild(modesContainer);
+        body.appendChild(modesContainer);
 
         // Кастомні налаштування (спочатку приховані)
         const customSettings = this.createCustomSettings();
-        menu.appendChild(customSettings);
+        body.appendChild(customSettings);
         if (currentMode === 'custom') {
             this.showCustomSettings();
         }
 
-        // Кнопка "Назад"
+        content.appendChild(body);
+
+        // Футер з кнопкою "Назад"
+        const footer = document.createElement('div');
+        footer.className = 'mode-selection-footer';
+
         const backBtn = document.createElement('button');
         backBtn.className = 'mode-selection-back-btn';
         backBtn.textContent = this.localization.t('backBtn');
@@ -77,7 +95,10 @@ export class ModeSelectionMenu {
                 this.onBackCallback();
             }
         });
-        menu.appendChild(backBtn);
+        footer.appendChild(backBtn);
+
+        content.appendChild(footer);
+        menu.appendChild(content);
 
         this.menuElement = menu;
         return menu;
@@ -229,6 +250,13 @@ export class ModeSelectionMenu {
         const sliderContainer = document.createElement('div');
         sliderContainer.className = 'custom-settings-slider-container';
 
+        const sliderWrapper = document.createElement('div');
+        sliderWrapper.className = 'custom-settings-slider-wrapper';
+
+        // Створити обводку як окремий елемент
+        const borderElement = document.createElement('div');
+        borderElement.className = 'custom-settings-slider-border';
+
         const slider = document.createElement('input');
         slider.type = 'range';
         slider.id = settingKey;
@@ -239,6 +267,14 @@ export class ModeSelectionMenu {
         slider.className = 'custom-settings-slider';
         slider.disabled = disabled;
 
+        // Розрахувати відсоток заповнення
+        const updateFill = () => {
+            const currentValue = parseFloat(slider.value);
+            const percentage = ((currentValue - min) / (max - min)) * 100;
+            slider.style.setProperty('--slider-fill', `${percentage}%`);
+        };
+        updateFill();
+
         const valueDisplay = document.createElement('span');
         valueDisplay.className = 'custom-settings-value';
         valueDisplay.textContent = value.toString();
@@ -246,6 +282,7 @@ export class ModeSelectionMenu {
         slider.addEventListener('input', (e) => {
             const newValue = parseInt((e.target as HTMLInputElement).value);
             valueDisplay.textContent = newValue.toString();
+            updateFill();
             this.soundManager.playSound('btn-press');
             this.settings.update({ [settingKey]: newValue } as any);
             if (this.onSettingsChangeCallback) {
@@ -253,8 +290,10 @@ export class ModeSelectionMenu {
             }
         });
 
-        sliderContainer.appendChild(slider);
-        sliderContainer.appendChild(valueDisplay);
+        sliderWrapper.appendChild(borderElement);
+        sliderWrapper.appendChild(slider);
+        sliderWrapper.appendChild(valueDisplay);
+        sliderContainer.appendChild(sliderWrapper);
 
         group.appendChild(labelEl);
         group.appendChild(sliderContainer);
