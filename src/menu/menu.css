@@ -83,6 +83,22 @@
     background: transparent;
 }
 
+.main-menu-content-wrapper {
+    margin-right: 45%;
+    padding: 2rem;
+    background: rgba(102, 0, 0, 0.281); /* Темно-червоний прозорий фон 30% */
+    backdrop-filter: blur(5px);
+    position: absolute;
+    top: -2rem;
+    bottom: -2rem;
+    z-index: 1;
+    box-sizing: border-box;
+    border: 1px solid #00d9ff; /* Рамка цианіту */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
 .main-menu-title-container {
     display: flex;
     flex-direction: column;
@@ -92,7 +108,7 @@
     margin: 0 auto 3rem auto;
     position: relative;
     z-index: 1;
-    padding: 0 2rem;
+    padding: 0;
     box-sizing: border-box;
 }
 
@@ -147,6 +163,8 @@
     align-items: flex-start;
     position: relative;
     z-index: 1;
+    margin: 0;
+    padding: 0;
 }
 
 .main-menu-button {
@@ -201,10 +219,13 @@
 /* Стилі для меню вибору режимів тепер знаходяться в settings.css */
 
 /* ==================== КНОПКА ПОВЕРНЕННЯ ДО МЕНЮ ==================== */
-.back-to-menu-button {
-    position: fixed;
-    top: 20px;
-    right: 20px;
+.back-to-menu-button,
+#back-to-menu-btn {
+    position: fixed !important;
+    top: 20px !important;
+    left: 20px !important;
+    right: auto !important;  /* Скидаємо right, якщо він був встановлений */
+    margin: 0 !important;  /* Скидаємо margin */
     padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
     font-family: 'Courier New', monospace;
@@ -218,6 +239,8 @@
     z-index: 1000;
     text-transform: uppercase;
     letter-spacing: 1.5px;
+    width: auto !important;  /* Не дозволяємо кнопці займати всю ширину */
+    display: inline-block !important;  /* Замість block, щоб не займала всю ширину */
 }
 
 .back-to-menu-button:hover {

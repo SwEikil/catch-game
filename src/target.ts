@@ -31,11 +31,6 @@ export class Target {
 
     // Миттєвий спавн в новому місці (після успішного кліку)
     spawn(): void {
-        // Якщо гра не почалася - не спавнитися
-        if (!this.isGameStarted) {
-            return;
-        }
-        
         // Скасувати таймер видимості якщо він є (важливо зробити це першим і синхронно)
         this.cancelVisibilityTimer();
 
@@ -45,9 +40,10 @@ export class Target {
 
         // Миттєво з'явитися в новому місці
         this.spawnAtNewPosition();
-        
+
         // Запустити новий таймер видимості для нової позиції одразу після спавну (синхронно)
         // Не використовуємо requestAnimationFrame, щоб уникнути затримки
+        // Важливо: startVisibilityTimer() перевірить isGameStarted, але target вже має з'явитися
         this.startVisibilityTimer();
     }
     
@@ -104,7 +100,13 @@ export class Target {
                 this.element.style.opacity = '1';
                 this.element.style.pointerEvents = 'auto';
                 this.element.style.transition = 'none'; // Без transition для миттєвого спавну
+            } else {
+                // Якщо контейнер занадто малий, спробувати ще раз через невелику затримку
+                setTimeout(() => this.spawnAtNewPosition(), 100);
             }
+        } else {
+            // Якщо контейнер ще не має розмірів, спробувати ще раз через невелику затримку
+            setTimeout(() => this.spawnAtNewPosition(), 100);
         }
     }
     

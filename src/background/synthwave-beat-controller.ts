@@ -28,10 +28,19 @@ export class SynthwaveBeatController {
             this.dataArray = new Uint8Array(new ArrayBuffer(this.analyser.frequencyBinCount));
         }
 
+        // Перевірити, чи audio елемент вже підключений до іншого MediaElementSourceNode
+        // Якщо так, спробувати використати існуючий source з WeakMap
         let source = this.sourceNodes.get(audioElement);
         if (!source) {
-            source = this.audioContext.createMediaElementSource(audioElement);
-            this.sourceNodes.set(audioElement, source);
+            try {
+                source = this.audioContext.createMediaElementSource(audioElement);
+                this.sourceNodes.set(audioElement, source);
+            } catch (error) {
+                // Якщо audio елемент вже підключений до іншого MediaElementSourceNode,
+                // не можемо створити новий. Просто виходимо.
+                console.warn('Audio element already connected to another MediaElementSourceNode:', error);
+                return;
+            }
         }
 
         if (this.currentSource && this.currentSource !== source) {
@@ -39,7 +48,12 @@ export class SynthwaveBeatController {
         }
 
         this.currentSource = source;
-        this.currentSource.disconnect();
+        // Переконатися що source не підключений до інших вузлів перед підключенням
+        try {
+            this.currentSource.disconnect();
+        } catch (e) {
+            // Якщо вже відключений, це нормально
+        }
         this.currentSource.connect(this.analyser);
         this.analyser.connect(this.audioContext.destination);
 
@@ -56,6 +70,16 @@ export class SynthwaveBeatController {
         if (this.rafId !== null) {
             cancelAnimationFrame(this.rafId);
             this.rafId = null;
+        }
+        // Відключити поточний source, але не видаляти його з WeakMap
+        // щоб інші контролери могли його використовувати
+        if (this.currentSource) {
+            try {
+                this.currentSource.disconnect();
+            } catch (e) {
+                // Якщо вже відключений, це нормально
+            }
+            this.currentSource = null;
         }
     }
 

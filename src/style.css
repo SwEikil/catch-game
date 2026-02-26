@@ -75,6 +75,18 @@ body::after {
   flex-direction: column;
 }
 
+/* ==================== GAME UI КОНТЕЙНЕР ==================== */
+#game-ui {
+  font-family: 'Courier New', 'Monaco', monospace;
+  text-align: center;
+  height: 100vh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Заголовок - яскраве світіння */
 #app h1 {
   color: #ffbd00;
@@ -146,11 +158,11 @@ body::after {
     linear-gradient(rgba(0, 217, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(0, 217, 255, 0.02) 1px, transparent 1px);
   background-size: 50px 50px;
-  background-color: var(--darker-bg);
+  background-color: transparent;  /* Прозорий фон, щоб synthwave background був видно */
   border-top: 1px solid rgba(0, 217, 255, 0.3);  /* Тонша межа */
   box-shadow: 
     0 -2px 10px rgba(0, 217, 255, 0.15),
-    inset 0 0 50px rgba(0, 0, 0, 0.5);
+    inset 0 0 50px rgba(0, 0, 0, 0.3);  /* Зменшено затемнення */
   overflow: hidden;
 }
 
@@ -337,4 +349,30 @@ body::before {
   100% {
     opacity: 0.5;
   }
+}
+
+/* ==================== КНОПКА ПОВЕРНЕННЯ ДО МЕНЮ ==================== */
+#back-to-menu-btn,
+.back-to-menu-button {
+    position: fixed !important;
+    top: 20px !important;
+    left: 20px !important;
+    right: auto !important;
+    margin: 0 !important;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(0, 217, 255, 0.3);
+    border-radius: 0;
+    color: rgba(0, 217, 255, 0.95);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 217, 255, 0.2);
+    z-index: 1000;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    width: auto !important;
+    display: inline-block !important;
+    text-align: left !important;
 }

@@ -28,6 +28,10 @@ export class MainMenu {
         menu.appendChild(background);
         this.backgroundElement = background;
 
+        // Обгортка для заголовка та кнопок
+        const contentWrapper = document.createElement('div');
+        contentWrapper.className = 'main-menu-content-wrapper';
+
         // Контейнер для заголовка та опису
         const titleContainer = document.createElement('div');
         titleContainer.className = 'main-menu-title-container';
@@ -44,7 +48,7 @@ export class MainMenu {
         description.textContent = this.localization.t('description');
         titleContainer.appendChild(description);
 
-        menu.appendChild(titleContainer);
+        contentWrapper.appendChild(titleContainer);
 
         // Контейнер для кнопок
         const buttonsContainer = document.createElement('div');
@@ -66,7 +70,8 @@ export class MainMenu {
         const exitBtn = this.createButton('exitBtn', 'exit');
         buttonsContainer.appendChild(exitBtn);
 
-        menu.appendChild(buttonsContainer);
+        contentWrapper.appendChild(buttonsContainer);
+        menu.appendChild(contentWrapper);
         this.menuElement = menu;
         return menu;
     }

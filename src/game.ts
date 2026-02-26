@@ -25,8 +25,8 @@ export class Game {
     private timeLeft: number = 30;
     private intervalId: number | null = null;
     private gameStarted: boolean = false;
-    private menuBeatController: SynthwaveBeatController | null = null;
-    private gameBeatController: SynthwaveBeatController | null = null;
+    private beatController: SynthwaveBeatController | null = null;
+    private currentBeatControllerHost: HTMLElement | null = null;
 
     constructor() {
         try {
@@ -185,6 +185,15 @@ export class Game {
     private startGame(): void {
         this.hideAllViews();
         
+        // UA: Видалити старий gameUI з DOM якщо він існує
+        // EN: Remove old gameUI from DOM if it exists
+        if (this.gameUI) {
+            const oldGameUIElement = this.gameUI.getApp();
+            if (oldGameUIElement && oldGameUIElement.parentElement) {
+                oldGameUIElement.parentElement.removeChild(oldGameUIElement);
+            }
+        }
+        
         // UA: Скидаємо лічильник очок перед стартом нової гри
         // EN: Reset score counter before starting a new game
         this.score = 0;
@@ -218,10 +227,14 @@ export class Game {
         });
         
         // Показати UI гри
-        this.app.appendChild(this.gameUI.getApp());
+        const gameUIElement = this.gameUI.getApp();
+        gameUIElement.style.display = '';
+        this.app.appendChild(gameUIElement);
         
         // UA: Включити музику відповідного режиму одразу після старту гри
         // EN: Start music for the corresponding mode immediately after game start
+        // ВАЖЛИВО: Спочатку зупинити menu beat, щоб уникнути конфлікту з MediaElementSourceNode
+        this.stopMenuBeat();
         this.musicManager.playGameTheme(currentMode);
         this.startGameBeat();
         
@@ -322,10 +335,19 @@ export class Game {
         if (!background) {
             return;
         }
-        if (!this.menuBeatController) {
-            this.menuBeatController = new SynthwaveBeatController(background);
+        
+        // Використовуємо один спільний beat controller для обох menu і game
+        // щоб уникнути конфлікту з MediaElementSourceNode
+        if (!this.beatController || this.currentBeatControllerHost !== background) {
+            this.stopBeatController();
+            this.beatController = new SynthwaveBeatController(background);
+            this.currentBeatControllerHost = background;
         }
-        this.menuBeatController.connect(this.musicManager.getCurrentAudioElement());
+        
+        const audioElement = this.musicManager.getCurrentAudioElement();
+        if (audioElement) {
+            this.beatController.connect(audioElement);
+        }
     }
 
     private startGameBeat(): void {
@@ -333,21 +355,43 @@ export class Game {
         if (!background) {
             return;
         }
-        if (!this.gameBeatController) {
-            this.gameBeatController = new SynthwaveBeatController(background);
+        
+        // Використовуємо один спільний beat controller для обох menu і game
+        // щоб уникнути конфлікту з MediaElementSourceNode
+        if (!this.beatController || this.currentBeatControllerHost !== background) {
+            this.stopBeatController();
+            this.beatController = new SynthwaveBeatController(background);
+            this.currentBeatControllerHost = background;
         }
-        this.gameBeatController.connect(this.musicManager.getCurrentAudioElement());
+        
+        const audioElement = this.musicManager.getCurrentAudioElement();
+        if (audioElement) {
+            this.beatController.connect(audioElement);
+        }
+    }
+
+    private stopBeatController(): void {
+        if (this.beatController) {
+            this.beatController.stop();
+            this.beatController.destroy();
+            this.beatController = null;
+            this.currentBeatControllerHost = null;
+        }
     }
 
     private stopMenuBeat(): void {
-        if (this.menuBeatController) {
-            this.menuBeatController.stop();
+        // Просто зупиняємо beat controller, але не знищуємо його
+        // щоб можна було використовувати для game
+        if (this.beatController) {
+            this.beatController.stop();
         }
     }
 
     private stopGameBeat(): void {
-        if (this.gameBeatController) {
-            this.gameBeatController.stop();
+        // Просто зупиняємо beat controller, але не знищуємо його
+        // щоб можна було використовувати для menu
+        if (this.beatController) {
+            this.beatController.stop();
         }
     }
 
@@ -355,7 +399,10 @@ export class Game {
         if (!this.target || !this.gameUI) return;
         
         const targetElement = this.target.getElement();
-        targetElement.addEventListener('click', () => this.handleTargetClick());
+        targetElement.addEventListener('click', (e) => {
+            e.stopPropagation(); // Запобігти всплиттю події
+            this.handleTargetClick();
+        });
         
         const backToMenuBtn = this.gameUI.getBackToMenuButton();
         backToMenuBtn.addEventListener('click', () => this.handleBackToMenu());
@@ -397,7 +444,8 @@ export class Game {
         // Запускаємо таймер при першому кліку
         if (!this.gameStarted) {
             this.startGameTimer();
-            // Встановити що гра почалася в target
+            // ВАЖЛИВО: Встановити що гра почалася в target ПЕРЕД будь-якими іншими операціями
+            // Це гарантує, що spawn() працюватиме правильно
             this.target.setGameStarted(true);
         }
         
@@ -412,7 +460,7 @@ export class Game {
         
         if (!isVisible) {
             // Ціль невидима - не зараховуємо бал, просто спавниться в новому місці
-            // Таймер вже скасований вище
+            // Таймер вже скасований вище, isGameStarted вже встановлено вище
             this.target.spawn();
             return;
         }
@@ -431,7 +479,7 @@ export class Game {
         }
         
         // Миттєво спавнитися в новому місці
-        // Таймер вже скасований вище, spawn() запустить новий з самого початку
+        // Таймер вже скасований вище, isGameStarted вже встановлено вище, spawn() запустить новий з самого початку
         this.target.spawn();
     }
     

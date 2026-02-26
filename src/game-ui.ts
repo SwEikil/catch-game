@@ -37,9 +37,8 @@ export class GameUI {
         this.localization = localization;
         this.soundManager = soundManager || null;
         this.app = document.createElement('div');
-        this.app.id = UI_IDS.app;
+        this.app.id = 'game-ui';
         this.app.className = 'game-ui';
-        document.body.appendChild(this.app);
 
         const background = this.createSynthwaveBackground('game');
         this.app.appendChild(background);
@@ -60,11 +59,19 @@ export class GameUI {
         this.scoreText = scoreItem.valueElement;
         this.timeText = timeItem.valueElement;
         
-        // Кнопка повернення до меню (в правому верхньому куті)
+        // Кнопка повернення до меню (в лівому верхньому куті)
         this.backToMenuBtn = document.createElement('button');
         this.backToMenuBtn.id = 'back-to-menu-btn';
         this.backToMenuBtn.textContent = this.localization.t('backToMenuBtn');
         this.backToMenuBtn.className = 'back-to-menu-button';
+        // Встановлюємо inline стилі для гарантії правильного позиціонування
+        this.backToMenuBtn.style.position = 'fixed';
+        this.backToMenuBtn.style.top = '20px';
+        this.backToMenuBtn.style.left = '20px';
+        this.backToMenuBtn.style.right = 'auto';
+        this.backToMenuBtn.style.margin = '0';
+        this.backToMenuBtn.style.width = 'auto';
+        this.backToMenuBtn.style.display = 'inline-block';
         this.app.appendChild(this.backToMenuBtn);
         
         // Підписатися на зміни мови

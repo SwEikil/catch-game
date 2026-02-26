@@ -163,7 +163,7 @@
     width: 300px;
     height: 300px;
     border-radius: 50%;
-    z-index: 2;
+    z-index: 1; /* Змінено з 2 на 1, щоб бути за горами */
 
     /* Glow lives on the host element (unmasked) */
     box-shadow:
@@ -179,26 +179,67 @@
     border-radius: 50%;
     background: linear-gradient(
         180deg,
-        #FDE910 0%,
-        #FF8C00 40%,
-        #FF4500 70%,
+        #ffffaa 0%,   /* Трохи світліший верх */
+        #FDE910 20%,
+        #FF8C00 50%,
+        #FF4500 75%,
         #FF0055 100%
     );
 
-    /* Scanlines – stripes that grow wider toward the bottom */
-    mask-image: repeating-linear-gradient(
-        0deg,
-        black 0px,
-        black 8px,
-        transparent 8px,
-        transparent 16px
+    /* Прогресивні смуги (blind effect) замість рівномірних */
+    mask-image: linear-gradient(
+        to bottom,
+        black 0%,
+        black 45%,      /* Верхня половина ціла */
+        transparent 45%,
+        transparent 47%, /* Щілина 2% */
+        black 47%,
+        black 55%,       /* Смуга 8% */
+        transparent 55%,
+        transparent 58%, /* Щілина 3% */
+        black 58%,
+        black 65%,       /* Смуга 7% */
+        transparent 65%,
+        transparent 69%, /* Щілина 4% */
+        black 69%,
+        black 75%,       /* Смуга 6% */
+        transparent 75%,
+        transparent 80%, /* Щілина 5% */
+        black 80%,
+        black 85%,       /* Смуга 5% */
+        transparent 85%,
+        transparent 91%, /* Щілина 6% */
+        black 91%,
+        black 95%,       /* Смуга 4% */
+        transparent 95%,
+        transparent 100%
     );
-    -webkit-mask-image: repeating-linear-gradient(
-        0deg,
-        black 0px,
-        black 8px,
-        transparent 8px,
-        transparent 16px
+    -webkit-mask-image: linear-gradient(
+        to bottom,
+        black 0%,
+        black 45%,
+        transparent 45%,
+        transparent 47%,
+        black 47%,
+        black 55%,
+        transparent 55%,
+        transparent 58%,
+        black 58%,
+        black 65%,
+        transparent 65%,
+        transparent 69%,
+        black 69%,
+        black 75%,
+        transparent 75%,
+        transparent 80%,
+        black 80%,
+        black 85%,
+        transparent 85%,
+        transparent 91%,
+        black 91%,
+        black 95%,
+        transparent 95%,
+        transparent 100%
     );
 }
 
@@ -211,7 +252,7 @@
     bottom: clamp(16%, 100vh - 650px, 18%);
     width: 40%;
     height: 200px;
-    z-index: 1;
+    z-index: 2; /* Змінено з 1 на 2, щоб перекривати сонце */
     overflow: visible;
 }
 
@@ -457,7 +498,7 @@
     position: relative;
 }
 
-.game-ui#app {
+#game-ui {
     background: transparent;
 }
 
@@ -468,6 +509,11 @@
 
 .game-ui > .synthwave-background {
     z-index: 0;
+    position: absolute !important;  /* Змінюємо з fixed на absolute для правильного позиціонування відносно game-ui */
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
 }
 
 @media (max-aspect-ratio: 3/4) {
